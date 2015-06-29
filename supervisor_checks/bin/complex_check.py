@@ -16,8 +16,8 @@ import sys
 from jcs3.utils import json_codec
 
 from supervisor_checks import check_runner
-from supervisor_checks.checks import http
-from supervisor_checks.checks import memory
+from supervisor_checks.check_modules import http
+from supervisor_checks.check_modules import memory
 
 
 CHECK_CLASSES = {http.HTTPCheck.NAME: http.HTTPCheck,

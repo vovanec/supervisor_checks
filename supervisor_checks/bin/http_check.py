@@ -14,7 +14,7 @@ import argparse
 import sys
 
 from supervisor_checks import check_runner
-from supervisor_checks.checks import http
+from supervisor_checks.check_modules import http
 
 
 def _make_argument_parser():

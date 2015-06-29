@@ -14,7 +14,7 @@ import argparse
 import sys
 
 from supervisor_checks import check_runner
-from supervisor_checks.checks import memory
+from supervisor_checks.check_modules import memory
 
 
 def _make_argument_parser():
