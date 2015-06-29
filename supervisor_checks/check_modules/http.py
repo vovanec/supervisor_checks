@@ -4,13 +4,12 @@
 __author__ = 'vovanec@gmail.com'
 
 import http.client
-import time
 
+from supervisor_checks import utils
 from supervisor_checks.check_modules import base
 
 
 DEFAULT_RETRIES = 2
-DEFAULT_RETRY_SLEEP_TIME = 3
 DEFAULT_TIMEOUT = 15
 
 LOCALHOST = '127.0.0.1'
@@ -50,8 +49,12 @@ class HTTPCheck(base.BaseCheck):
     def _http_check(self, process_name, port):
 
         host_port = '%s:%s' % (LOCALHOST, port,)
+        num_retries = self._config.get('num_retries', DEFAULT_RETRIES)
+        timeout = self._config.get('timeout', DEFAULT_TIMEOUT)
 
-        res = self._make_http_request(process_name, host_port)
+        with utils.retry_errors(num_retries, self._log).retry_context(
+                self._make_http_request) as retry_http_request:
+            res = retry_http_request(process_name, host_port, timeout)
 
         self._log('Status contacting URL http://%s%s for process %s: '
                   '%s %s' % (host_port, self._config['url'], process_name,
@@ -63,29 +66,10 @@ class HTTPCheck(base.BaseCheck):
 
         return True
 
-    def _make_http_request(self, process_name, host_port):
+    def _make_http_request(self, host_port, timeout):
 
-        tries_count = 0
+        connection = http.client.HTTPConnection(host_port, timeout=timeout)
+        connection.request(
+            'GET', self._config['url'], headers=self.HEADERS)
 
-        while True:
-            try:
-                connection = http.client.HTTPConnection(
-                    host_port, timeout=self._config['timeout'])
-                connection.request(
-                    'GET', self._config['url'], headers=self.HEADERS)
-
-                return connection.getresponse()
-            except Exception as exc:
-                tries_count += 1
-
-                if tries_count <= self._config['num_retries']:
-                    retry_in = tries_count * DEFAULT_RETRY_SLEEP_TIME
-                    self._log(
-                        'Exception occurred during HTTP request to http://%s%s '
-                        'for process %s: %s. Retry in %s seconds.' % (
-                            host_port, self._config['url'], process_name, exc,
-                            retry_in))
-
-                    time.sleep(retry_in)
-                else:
-                    raise
+        return connection.getresponse()

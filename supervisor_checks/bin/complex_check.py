@@ -18,10 +18,12 @@ from jcs3.utils import json_codec
 from supervisor_checks import check_runner
 from supervisor_checks.check_modules import http
 from supervisor_checks.check_modules import memory
+from supervisor_checks.check_modules import tcp
 
 
 CHECK_CLASSES = {http.HTTPCheck.NAME: http.HTTPCheck,
-                 memory.MemoryCheck.NAME: memory.MemoryCheck}
+                 memory.MemoryCheck.NAME: memory.MemoryCheck,
+                 tcp.TCPCheck.NAME: tcp.TCPCheck}
 
 
 def _make_argument_parser():

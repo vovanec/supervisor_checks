@@ -35,6 +35,7 @@ setup(
         'console_scripts': [
             'supervisor_memory_check=supervisor_checks.bin.memory_check:main',
             'supervisor_http_check=supervisor_checks.bin.http_check:main',
+            'supervisor_tcp_check=supervisor_checks.bin.tcp_check:main',
             'supervisor_complex_check=supervisor_checks.bin.complex_check:main']
     }
 )
