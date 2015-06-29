@@ -18,7 +18,7 @@ setup(
     maintainer_email='vovanec@gmail.com',
     url='https://github.com/vovanec/supervisor_checks',
     download_url='https://github.com/vovanec/supervisor_checks/tarball/0.1.0',
-    keywords=['supevisor', 'event', 'eventlistener',
+    keywords=['supervisor', 'event', 'listener', 'eventlistener',
               'http', 'memory', 'xmlrpc', 'health', 'check', 'monitor'],
     license='MIT',
     classifiers=['License :: OSI Approved :: MIT License',
