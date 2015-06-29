@@ -6,7 +6,7 @@ __author__ = 'vovanec@gmail.com'
 import http.client
 import time
 
-from supervisor_checks.checks import base
+from supervisor_checks.check_modules import base
 
 
 DEFAULT_RETRIES = 2

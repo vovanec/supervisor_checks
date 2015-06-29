@@ -5,7 +5,7 @@ __author__ = 'vovanec@gmail.com'
 
 import psutil
 
-from supervisor_checks.checks import base
+from supervisor_checks.check_modules import base
 
 
 class MemoryCheck(base.BaseCheck):
