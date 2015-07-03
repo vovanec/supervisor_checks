@@ -41,6 +41,7 @@ class HTTPCheck(base.BaseCheck):
             self._log('Could not extract the HTTP port from the process '
                       'name %s and no port specified in configuration.',
                       process_spec['name'])
+            return True
         except Exception as exc:
             self._log('Check failed: %s', exc)
 

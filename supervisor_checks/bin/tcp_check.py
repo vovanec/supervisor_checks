@@ -1,7 +1,7 @@
 """Example configuration:
 
-[eventlistener:tcp_check]
-command=usr/local/bin/supervisor_tcp_check -n example_service_check -u /ping -t 30 -r 3 -g example_service
+[eventlistener:example_check]
+command=/usr/local/bin/supervisor_tcp_check -n example_service_check -u /ping -t 30 -r 3 -g example_service
 events=TICK_60
 """
 

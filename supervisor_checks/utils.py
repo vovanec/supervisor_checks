@@ -1,4 +1,7 @@
-__author__ = 'vovan'
+"""Utility functions.
+"""
+
+__author__ = 'vovanec@gmail.com'
 
 
 import contextlib
