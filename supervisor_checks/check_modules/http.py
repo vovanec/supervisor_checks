@@ -37,7 +37,7 @@ class HTTPCheck(base.BaseCheck):
             return self._http_check(process_spec['name'], port)
 
         except IndexError:
-            self._log('Could not extract the HTTP port from the process '
+            self._log('ERROR: Could not extract the HTTP port from the process '
                       'name %s and no port specified in configuration.',
                       process_spec['name'])
             return True
@@ -73,3 +73,15 @@ class HTTPCheck(base.BaseCheck):
             'GET', self._config['url'], headers=self.HEADERS)
 
         return connection.getresponse()
+
+    def _validate_config(self):
+
+        if 'url' not in self._config:
+            raise base.InvalidCheckConfig(
+                'Required `url` parameter is missing in %s check config.' % (
+                    self.NAME,))
+
+        if not isinstance(self._config['url'], str):
+            raise base.InvalidCheckConfig(
+                '`url` parameter must be string type in %s check config.' % (
+                    self.NAME,))

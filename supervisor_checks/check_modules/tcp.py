@@ -42,7 +42,7 @@ class TCPCheck(base.BaseCheck):
                 return retry_tcp_check(process_spec['name'], port, timeout)
 
         except (IndexError, TypeError, ValueError):
-            self._log('Could not extract the TCP port from the process '
+            self._log('ERROR: Could not extract the TCP port from the process '
                       'name %s and no port specified in configuration.',
                       process_spec['name'])
             return True

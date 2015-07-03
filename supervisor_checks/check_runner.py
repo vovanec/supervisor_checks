@@ -32,6 +32,13 @@ class CheckRunner(object):
     """
 
     def __init__(self, check_name, process_group, checks_config, env=None):
+        """Constructor.
+
+        :param str check_name: the name of check to display in log.
+        :param str process_group: the name of the process group.
+        :param list checks_config: the list of check module configurations.
+        :param dict env: environment.
+        """
 
         self._environment = env or os.environ
         self._name = check_name

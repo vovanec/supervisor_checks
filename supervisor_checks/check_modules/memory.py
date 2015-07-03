@@ -19,7 +19,7 @@ class MemoryCheck(base.BaseCheck):
         pid = process_spec['pid']
         process_name = process_spec['name']
 
-        if self._config['cumulative']:
+        if self._config.get('cumulative', False):
             rss = self._get_cumulative_rss(pid, process_name)
         else:
             rss = self._get_rss(pid, process_name)
@@ -57,3 +57,15 @@ class MemoryCheck(base.BaseCheck):
             rss_total += child_process.memory_info().rss
 
         return int(rss_total / 1024)
+
+    def _validate_config(self):
+
+        if 'max_rss' not in self._config:
+            raise base.InvalidCheckConfig(
+                'Required `max_rss` parameter is missing in %s check config.'
+                % (self.NAME,))
+
+        if not isinstance(self._config['max_rss'], (int, float)):
+            raise base.InvalidCheckConfig(
+                '`max_rss` parameter must be numeric type in %s check config.'
+                % (self.NAME,))

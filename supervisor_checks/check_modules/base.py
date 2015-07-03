@@ -4,6 +4,13 @@
 __author__ = 'vovanec@gmail.com'
 
 
+class InvalidCheckConfig(ValueError):
+    """Raised when invalid configuration dictionary passed to check module.
+    """
+
+    pass
+
+
 class BaseCheck(object):
     """Base process check.
     """
@@ -19,6 +26,7 @@ class BaseCheck(object):
 
         self._config = check_config
         self.__log = log
+        self._validate_config()
 
     def __call__(self, process_spec):
         """Run single check.
@@ -39,3 +47,10 @@ class BaseCheck(object):
         """
 
         self.__log('%s: %s' % (self.__class__.__name__, msg % args))
+
+    def _validate_config(self):
+        """Method may be implemented in subclasses. Should return None or
+        raise InvalidCheckConfig in case if configuration is invalid.
+        """
+
+        pass
