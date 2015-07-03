@@ -54,7 +54,7 @@ class HTTPCheck(base.BaseCheck):
 
         with utils.retry_errors(num_retries, self._log).retry_context(
                 self._make_http_request) as retry_http_request:
-            res = retry_http_request(process_name, host_port, timeout)
+            res = retry_http_request(host_port, timeout)
 
         self._log('Status contacting URL http://%s%s for process %s: '
                   '%s %s' % (host_port, self._config['url'], process_name,
