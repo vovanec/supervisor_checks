@@ -11,8 +11,8 @@ __author__ = 'vovanec@gmail.net'
 import argparse
 import sys
 
-from monitoring.supervisord import check_runner
-from monitoring.supervisord.checks import tcp
+from supervisor_checks import check_runner
+from supervisor_checks.check_modules import tcp
 
 
 def _make_argument_parser():
