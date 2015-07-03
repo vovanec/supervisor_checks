@@ -11,9 +11,8 @@ __author__ = 'vovanec@gmail.com'
 
 
 import argparse
+import json
 import sys
-
-from jcs3.utils import json_codec
 
 from supervisor_checks import check_runner
 from supervisor_checks.check_modules import http
@@ -49,7 +48,7 @@ def main():
     arg_parser = _make_argument_parser()
     args = arg_parser.parse_args()
 
-    checks_config_dict = json_codec.loads(args.check_config)
+    checks_config_dict = json.loads(args.check_config)
     if not isinstance(checks_config_dict, dict):
         raise ValueError('Check config must be dictionary type!')
 

@@ -37,7 +37,7 @@ def _make_argument_parser():
         help='Connection timeout. Default: %s' % (http.DEFAULT_TIMEOUT,))
     parser.add_argument(
         '-r', '--num-retries', dest='num_retries', type=int,
-        default=http.DEFAULT_RETRIES,  required=False,
+        default=http.DEFAULT_RETRIES, required=False,
         help='Connection retries. Default: %s' % (http.DEFAULT_RETRIES,))
     parser.add_argument(
         '-p', '--port', dest='port', type=int,

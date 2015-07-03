@@ -1,4 +1,6 @@
-"""Example configuration:
+"""Health check based on TCP connection status.
+
+Example configuration:
 
 [eventlistener:example_check]
 command=/usr/local/bin/supervisor_tcp_check -n example_service_check -u /ping -t 30 -r 3 -g example_service
@@ -33,7 +35,7 @@ def _make_argument_parser():
         help='Connection timeout. Default: %s' % (tcp.DEFAULT_TIMEOUT,))
     parser.add_argument(
         '-r', '--num-retries', dest='num_retries', type=int,
-        default=tcp.DEFAULT_RETRIES,  required=False,
+        default=tcp.DEFAULT_RETRIES, required=False,
         help='Connection retries. Default: %s' % (tcp.DEFAULT_RETRIES,))
     parser.add_argument(
         '-p', '--port', dest='port', type=int,

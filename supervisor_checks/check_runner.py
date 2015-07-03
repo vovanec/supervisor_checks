@@ -11,12 +11,11 @@ import os
 import signal
 import sys
 import threading
-import xmlrpc.client as xmlrpclib
 
 from supervisor import childutils
+from supervisor.compat import xmlrpclib
 from supervisor.options import make_namespec
 from supervisor.states import ProcessStates
-
 
 # Process spec keys
 STATE_KEY = 'state'
@@ -55,7 +54,7 @@ class CheckRunner(object):
         while not self._stop_event.is_set():
 
             try:
-                headers, payload = childutils.listener.wait(
+                headers, _ = childutils.listener.wait(
                     sys.stdin, sys.stdout, waiter=self._stop_event)
             except childutils.WaitInterrupted:
                 self._log(

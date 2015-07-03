@@ -3,9 +3,8 @@
 
 __author__ = 'vovanec@gmail.com'
 
-import http.client
-
 from supervisor_checks import utils
+from supervisor.compat import httplib
 from supervisor_checks.check_modules import base
 
 
@@ -61,15 +60,15 @@ class HTTPCheck(base.BaseCheck):
                   '%s %s' % (host_port, self._config['url'], process_name,
                              res.status, res.reason))
 
-        if res.status != http.client.OK:
-            raise http.client.HTTPException(
+        if res.status != httplib.OK:
+            raise httplib.HTTPException(
                 'Bad HTTP status code: %s' % (res.status,))
 
         return True
 
     def _make_http_request(self, host_port, timeout):
 
-        connection = http.client.HTTPConnection(host_port, timeout=timeout)
+        connection = httplib.HTTPConnection(host_port, timeout=timeout)
         connection.request(
             'GET', self._config['url'], headers=self.HEADERS)
 

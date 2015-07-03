@@ -1,12 +1,22 @@
+import sys
+
 from setuptools import setup, find_packages
+
+py_version = sys.version_info[:2]
+
+if py_version < (2, 6):
+    raise RuntimeError('On Python 2, this package requires Python 2.6 or later')
+elif (3, 0) < py_version < (3, 2):
+    raise RuntimeError('On Python 3, this package requires Python 3.2 or later')
 
 
 install_requires = ['supervisor>=4.0.0',
                     'psutil']
 
+if py_version < (3, 2):
+    install_requires.append('futures')
 
 tests_require = install_requires + []
-
 
 setup(
     name='supervisor_checks',
@@ -24,6 +34,17 @@ setup(
     classifiers=['License :: OSI Approved :: MIT License',
                  'Development Status :: 4 - Beta',
                  'Intended Audience :: Developers',
+                 'Operating System :: POSIX',
+                 'Topic :: System :: Boot',
+                 'Topic :: System :: Monitoring',
+                 'Topic :: System :: Systems Administration',
+                 'Programming Language :: Python',
+                 'Programming Language :: Python :: 2',
+                 'Programming Language :: Python :: 2.6',
+                 'Programming Language :: Python :: 2.7',
+                 'Programming Language :: Python :: 3',
+                 'Programming Language :: Python :: 3.2',
+                 'Programming Language :: Python :: 3.3',
                  'Programming Language :: Python :: 3.4'],
     install_requires=install_requires,
     tests_require=tests_require,
@@ -39,3 +60,4 @@ setup(
             'supervisor_complex_check=supervisor_checks.bin.complex_check:main']
     }
 )
+
