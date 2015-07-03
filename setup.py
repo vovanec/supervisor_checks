@@ -10,8 +10,9 @@ elif (3, 0) < py_version < (3, 2):
     raise RuntimeError('On Python 3, this package requires Python 3.2 or later')
 
 
-install_requires = ['supervisor>=4.0.0',
-                    'psutil']
+install_requires = ['psutil',
+                    # 'supervisor>=4.0.0',
+                    ]
 
 if py_version < (3, 2):
     install_requires.append('futures')
