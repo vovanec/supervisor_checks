@@ -281,7 +281,7 @@ Complex check(run multiple checks at once).
       -g PROCESS_GROUP, --process-group PROCESS_GROUP
                             Supervisor process group name.
       -c CHECK_CONFIG, --check-config CHECK_CONFIG
-                            Check config JSON
+                            Check config in JSON format
 
 #### Example configuration
 
