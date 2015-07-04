@@ -148,7 +148,7 @@ Process check based on TCP connection status.
                             Check name.
       -g PROCESS_GROUP, --process-group PROCESS_GROUP
                             Supervisor process group name.
-      -p PORT, --port PORT  HTTP port to query. Can be integer or regular
+      -p PORT, --port PORT  TCP port to query. Can be integer or regular
                             expression which will be used to extract port from a
                             process name.
       -t TIMEOUT, --timeout TIMEOUT
@@ -201,7 +201,7 @@ Process check based on call to XML RPC server.
                             <process_name>.sock.
       -m METHOD, --method METHOD
                             XML RPC method name. Default is status                            
-      -p PORT, --port PORT  HTTP port to query. Can be integer or regular
+      -p PORT, --port PORT  Port to query. Can be integer or regular
                             expression which will be used to extract port from a
                             process name.
       -r NUM_RETRIES, --num-retries NUM_RETRIES
