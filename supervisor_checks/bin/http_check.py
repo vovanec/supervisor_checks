@@ -32,6 +32,11 @@ def _make_argument_parser():
     parser.add_argument('-u', '--url', dest='url', type=str,
                         help='HTTP check url', required=True, default=None)
     parser.add_argument(
+        '-p', '--port', dest='port', type=str,
+        default=None, required=True,
+        help='HTTP port to query. Can be integer or regular expression which '
+             'will be used to extract port from a process name.')
+    parser.add_argument(
         '-t', '--timeout', dest='timeout', type=int, required=False,
         default=http.DEFAULT_TIMEOUT,
         help='Connection timeout. Default: %s' % (http.DEFAULT_TIMEOUT,))
@@ -39,9 +44,6 @@ def _make_argument_parser():
         '-r', '--num-retries', dest='num_retries', type=int,
         default=http.DEFAULT_RETRIES, required=False,
         help='Connection retries. Default: %s' % (http.DEFAULT_RETRIES,))
-    parser.add_argument(
-        '-p', '--port', dest='port', type=int,
-        default=None, required=False, help='HTTP port to query.')
 
     return parser
 

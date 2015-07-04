@@ -6,7 +6,10 @@ __author__ = 'vovanec@gmail.com'
 
 import contextlib
 import functools
+import re
 import time
+
+from supervisor_checks import errors
 
 
 RETRY_SLEEP_TIME = 3
@@ -50,3 +53,35 @@ class retry_errors(object):
         """
 
         yield self(func)
+
+
+def get_port(port_or_port_re, process_name):
+    """Given the regular expression, extract port from the process name.
+
+    :param str port_or_port_re: whether integer port or port regular expression.
+    :param str process_name: process name.
+
+    :rtype: int|None
+    """
+
+    if isinstance(port_or_port_re, int):
+        return port_or_port_re
+
+    try:
+        return int(port_or_port_re)
+    except ValueError:
+        pass
+
+    match = re.match(port_or_port_re, process_name)
+
+    if match:
+        try:
+            groups = match.groups()
+            if len(groups) == 1:
+                return int(groups[0])
+        except (ValueError, TypeError) as err:
+            raise errors.InvalidCheckConfig(err)
+
+    raise errors.InvalidCheckConfig(
+        'Could not extract port number for process name %s using regular '
+        'expression %s' % (process_name, port_or_port_re))

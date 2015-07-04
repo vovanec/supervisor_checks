@@ -5,12 +5,12 @@ __author__ = 'vovanec@gmail.com'
 
 import socket
 
+from supervisor_checks import errors
 from supervisor_checks import utils
 from supervisor_checks.check_modules import base
 
 
 DEFAULT_RETRIES = 2
-DEFAULT_RETRY_SLEEP_TIME = 3
 DEFAULT_TIMEOUT = 15
 
 LOCALHOST = '127.0.0.1'
@@ -28,23 +28,15 @@ class TCPCheck(base.BaseCheck):
         num_retries = self._config.get('num_retries', DEFAULT_RETRIES)
 
         try:
-            port = self._config.get('port')
-            if not port:
-                # If there's no port provided in config, we assume the port
-                # name is the last part of process name in the process group.
-                port = int(process_spec['name'].rsplit('_', 1)[1])
-
-            self._log('Trying to connect to TCP port %s for process %s',
-                      port, process_spec['name'])
-
+            port = utils.get_port(self._config['port'], process_spec['name'])
             with utils.retry_errors(num_retries, self._log).retry_context(
                     self._tcp_check) as retry_tcp_check:
                 return retry_tcp_check(process_spec['name'], port, timeout)
+        except errors.InvalidPortSpec:
+            self._log('ERROR: Could not extract the HTTP port for process '
+                      'name %s using port specification %s.',
+                      process_spec['name'], self._config['port'])
 
-        except (IndexError, TypeError, ValueError):
-            self._log('ERROR: Could not extract the TCP port from the process '
-                      'name %s and no port specified in configuration.',
-                      process_spec['name'])
             return True
         except Exception as exc:
             self._log('Check failed: %s', exc)
@@ -53,6 +45,8 @@ class TCPCheck(base.BaseCheck):
 
     def _tcp_check(self, process_name, port, timeout):
 
+        self._log('Trying to connect to TCP port %s for process %s',
+                  port, process_name)
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(timeout)
         sock.connect((LOCALHOST, port))
@@ -62,3 +56,10 @@ class TCPCheck(base.BaseCheck):
                   port, process_name)
 
         return True
+
+    def _validate_config(self):
+
+        if 'port' not in self._config:
+            raise errors.InvalidCheckConfig(
+                'Required `port` parameter is missing in %s check config.' % (
+                    self.NAME,))

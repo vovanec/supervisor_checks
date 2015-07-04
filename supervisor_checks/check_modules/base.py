@@ -4,13 +4,6 @@
 __author__ = 'vovanec@gmail.com'
 
 
-class InvalidCheckConfig(ValueError):
-    """Raised when invalid configuration dictionary passed to check module.
-    """
-
-    pass
-
-
 class BaseCheck(object):
     """Base process check.
     """

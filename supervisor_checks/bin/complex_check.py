@@ -18,11 +18,13 @@ from supervisor_checks import check_runner
 from supervisor_checks.check_modules import http
 from supervisor_checks.check_modules import memory
 from supervisor_checks.check_modules import tcp
+from supervisor_checks.check_modules import xmlrpc
 
 
 CHECK_CLASSES = {http.HTTPCheck.NAME: http.HTTPCheck,
                  memory.MemoryCheck.NAME: memory.MemoryCheck,
-                 tcp.TCPCheck.NAME: tcp.TCPCheck}
+                 tcp.TCPCheck.NAME: tcp.TCPCheck,
+                 xmlrpc.XMLRPCCheck.NAME: xmlrpc.XMLRPCCheck}
 
 
 def _make_argument_parser():

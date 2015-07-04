@@ -5,6 +5,7 @@ __author__ = 'vovanec@gmail.com'
 
 import psutil
 
+from supervisor_checks import errors
 from supervisor_checks.check_modules import base
 
 
@@ -61,11 +62,11 @@ class MemoryCheck(base.BaseCheck):
     def _validate_config(self):
 
         if 'max_rss' not in self._config:
-            raise base.InvalidCheckConfig(
+            raise errors.InvalidCheckConfig(
                 'Required `max_rss` parameter is missing in %s check config.'
                 % (self.NAME,))
 
         if not isinstance(self._config['max_rss'], (int, float)):
-            raise base.InvalidCheckConfig(
+            raise errors.InvalidCheckConfig(
                 '`max_rss` parameter must be numeric type in %s check config.'
                 % (self.NAME,))

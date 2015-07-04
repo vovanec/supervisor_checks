@@ -3,6 +3,7 @@
 
 __author__ = 'vovanec@gmail.com'
 
+from supervisor_checks import errors
 from supervisor_checks import utils
 from supervisor.compat import httplib
 from supervisor_checks.check_modules import base
@@ -24,22 +25,13 @@ class HTTPCheck(base.BaseCheck):
     def __call__(self, process_spec):
 
         try:
-            port = self._config.get('port')
-            if not port:
-                # If there's no port provided in config, we assume the port
-                # name is the last part of process name in the process group.
-                port = process_spec['name'].rsplit('_', 1)[1]
-
-            self._log('Querying URL http://%s:%s%s for process %s',
-                      LOCALHOST, port, self._config['url'],
-                      process_spec['name'])
-
+            port = utils.get_port(self._config['port'], process_spec['name'])
             return self._http_check(process_spec['name'], port)
+        except errors.InvalidPortSpec:
+            self._log('ERROR: Could not extract the HTTP port for process '
+                      'name %s using port specification %s.',
+                      process_spec['name'], self._config['port'])
 
-        except IndexError:
-            self._log('ERROR: Could not extract the HTTP port from the process '
-                      'name %s and no port specified in configuration.',
-                      process_spec['name'])
             return True
         except Exception as exc:
             self._log('Check failed: %s', exc)
@@ -47,6 +39,10 @@ class HTTPCheck(base.BaseCheck):
         return False
 
     def _http_check(self, process_name, port):
+
+        self._log('Querying URL http://%s:%s%s for process %s',
+                  LOCALHOST, port, self._config['url'],
+                  process_name)
 
         host_port = '%s:%s' % (LOCALHOST, port,)
         num_retries = self._config.get('num_retries', DEFAULT_RETRIES)
@@ -77,11 +73,16 @@ class HTTPCheck(base.BaseCheck):
     def _validate_config(self):
 
         if 'url' not in self._config:
-            raise base.InvalidCheckConfig(
+            raise errors.InvalidCheckConfig(
                 'Required `url` parameter is missing in %s check config.' % (
                     self.NAME,))
 
         if not isinstance(self._config['url'], str):
-            raise base.InvalidCheckConfig(
+            raise errors.InvalidCheckConfig(
                 '`url` parameter must be string type in %s check config.' % (
+                    self.NAME,))
+
+        if 'port' not in self._config:
+            raise errors.InvalidCheckConfig(
+                'Required `port` parameter is missing in %s check config.' % (
                     self.NAME,))
