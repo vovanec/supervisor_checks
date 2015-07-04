@@ -1,4 +1,4 @@
-# Module supervisor_checks
+# Supervisor Health Checks
 
 Framework to build health checks for Supervisor-based services.
 
@@ -76,9 +76,7 @@ Here's the example of adding custom check:
         def __call__(self, process_spec):
 
             # Always return True
-
             return True
-
 
     if __name__ == '__main__':
     
@@ -292,6 +290,15 @@ Here's example configuration using memory and http checks:
     [eventlistener:example_check]
     command=/usr/local/bin/supervisor_complex_check -n example_check -g example_service -c '{"memory":{"cumulative":true,"max_rss":4194304},"http":{"timeout":15,"port":8090,"url":"\/ping","num_retries":3}}'
     events=TICK_60
+
+
+## Acknowledgement
+
+This is heavily inspired by [Superlance](https://superlance.readthedocs.org/en/latest/) package.
+
+Though, while [Superlance](https://superlance.readthedocs.org/en/latest/) is basically the set
+of feature-rich health check programs, `supervisor_checks` package is mostly focused on providing
+the framework to easily implement application-specific health checks of any complexity.
 
 ## Bug reports
 
