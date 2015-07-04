@@ -3,7 +3,10 @@
 Framework to build health checks for Supervisor-based services.
 
 Health check programs are supposed to run as event listeners in Supervisor
-environment. Here's typical configuration example:
+environment. Supervisor will attempt to restart monitored processes on check
+failure.
+ 
+Here's typical configuration example:
 
     [eventlistener:example_check]
     command=python <path_to_supervisor_check_program>
@@ -11,212 +14,13 @@ environment. Here's typical configuration example:
     stdout_logfile = /var/log/supervisor/supervisor_example_check-stdout.log
     events=TICK_60
     
-## Out-of-box checks
-
-### HTTP Check
-
-Process check based on HTTP query.
-
-#### CLI
-
-    $ /usr/local/bin/supervisor_http_check -h
-    usage: supervisor_http_check [-h] -n CHECK_NAME -g PROCESS_GROUP -u URL -p
-                                 PORT [-t TIMEOUT] [-r NUM_RETRIES]
+Here's the list of check programs package provides out-of-box:
     
-    Run HTTP check program.
-    
-    optional arguments:
-      -h, --help            show this help message and exit
-      -n CHECK_NAME, --check-name CHECK_NAME
-                            Health check name.
-      -g PROCESS_GROUP, --process-group PROCESS_GROUP
-                            Supervisor process group name.
-      -u URL, --url URL     HTTP check url
-      -p PORT, --port PORT  HTTP port to query. Can be integer or regular
-                            expression which will be used to extract port from a
-                            process name.
-      -t TIMEOUT, --timeout TIMEOUT
-                            Connection timeout. Default: 15
-      -r NUM_RETRIES, --num-retries NUM_RETRIES
-                            Connection retries. Default: 2
-                            
-#### Configuration Examples
-
-Query process running on port 8080 using URL _/ping_:
-
-    [eventlistener:example_check]
-    command=/usr/local/bin/supervisor_http_check -g example_service -n example_check -u /ping -t 30 -r 3 -p 8080
-    events=TICK_60
-    
-Query process group using URL /ping. Each process is listening on it's own port.
-Each process name is formed as _some-process-name\_port_ so particular port number can
-be extracted using regular expression:
-
-    [eventlistener:example_check]
-    /usr/local/bin/supervisor_http_check -g example_service -n example_check -u /ping -t 30 -r 3 -p ".+_(\\d+)"    
-    events=TICK_60
-
-
-### TCP Check
-
-Process check based on TCP connection status.
-
-#### CLI
-
-    /usr/local/bin/supervisor_tcp_check -h
-    usage: supervisor_tcp_check [-h] -n CHECK_NAME -g PROCESS_GROUP -p PORT
-                                [-t TIMEOUT] [-r NUM_RETRIES]
-    
-    Run TCP check program.
-    
-    optional arguments:
-      -h, --help            show this help message and exit
-      -n CHECK_NAME, --check-name CHECK_NAME
-                            Check name.
-      -g PROCESS_GROUP, --process-group PROCESS_GROUP
-                            Supervisor process group name.
-      -p PORT, --port PORT  HTTP port to query. Can be integer or regular
-                            expression which will be used to extract port from a
-                            process name.
-      -t TIMEOUT, --timeout TIMEOUT
-                            Connection timeout. Default: 15
-      -r NUM_RETRIES, --num-retries NUM_RETRIES
-                            Connection retries. Default: 2
-                            
-#### Configuration Examples
-
-Connect to process running on port 8080:
-
-    [eventlistener:example_check]
-    command=/usr/local/bin/supervisor_tcp_check -g example_service -n example_check -t 30 -r 3 -p 8080
-    events=TICK_60
-    
-Query process group when each process is listening on it's own port. 
-Each process name is formed as _some-process-name\_port_ so particular port number can
-be extracted using regular expression:
-
-    [eventlistener:example_check]
-    /usr/local/bin/supervisor_tcp_check -g example_service -n example_check -t 30 -r 3 -p ".+_(\\d+)"    
-    events=TICK_60                            
-
-
-### XMLRPC Check
-
-Process check based on call to XML RPC server.
-
-#### CLI
-
-    /usr/local/bin/supervisor_xmlrpc_check -h
-    usage: supervisor_xmlrpc_check [-h] -n CHECK_NAME -g PROCESS_GROUP [-u URL]
-                                   [-s SOCK_PATH] [-S SOCK_DIR] [-p PORT]
-                                   [-r NUM_RETRIES]
-    
-    Run XML RPC check program.
-    
-    optional arguments:
-      -h, --help            show this help message and exit
-      -n CHECK_NAME, --check-name CHECK_NAME
-                            Health check name.
-      -g PROCESS_GROUP, --process-group PROCESS_GROUP
-                            Supervisor process group name.
-      -u URL, --url URL     HTTP check url
-      -s SOCK_PATH, --socket-path SOCK_PATH
-                            Full path to XML RPC server local socket
-      -S SOCK_DIR, --socket-dir SOCK_DIR
-                            Path to XML RPC server socket directory. Socket name
-                            will be constructed using process name:
-                            <process_name>.sock.
-      -m METHOD, --method METHOD
-                            XML RPC method name. Default is status                            
-      -p PORT, --port PORT  HTTP port to query. Can be integer or regular
-                            expression which will be used to extract port from a
-                            process name.
-      -r NUM_RETRIES, --num-retries NUM_RETRIES
-                            Connection retries. Default: 2
-
-#### Configuration Examples
-
-Call to process' XML RPC server listening on port 8080, URL /status, RPC method get_status:
-
-    [eventlistener:example_check]
-    command=/usr/local/bin/supervisor_xmlrpc_check -g example_service -n example_check -r 3 -p 8080 -u /status -m get_status
-    events=TICK_60
-    
-Call to process' XML RPC server listening on UNIX socket:
-
-    [eventlistener:example_check]
-    command=/usr/local/bin/supervisor_xmlrpc_check -g example_service -n example_check -r 3 -s /var/run/example.sock -m get_status
-    events=TICK_60
-    
-Call to process group XML RPC servers, listening on different UNIX socket. In such
-case socket directory must be specified, process socket name will be formed as <process_name>.sock:
-
-    [eventlistener:example_check]
-    command=/usr/local/bin/supervisor_xmlrpc_check -g example_service -n example_check -r 3 -S /var/run/ -m get_status
-    events=TICK_60    
-
-### Memory Check
-
-Process check based on amount of memory consumed by process.
-
-#### CLI
-
-    /usr/local/bin/supervisor_memory_check -h
-    usage: supervisor_memory_check [-h] -n CHECK_NAME -g PROCESS_GROUP -m MAX_RSS
-                                   [-c CUMULATIVE]
-    
-    Run memory check program.
-    
-    optional arguments:
-      -h, --help            show this help message and exit
-      -n CHECK_NAME, --check-name CHECK_NAME
-                            Health check name.
-      -g PROCESS_GROUP, --process-group PROCESS_GROUP
-                            Supervisor process group name.
-      -m MAX_RSS, --msx-rss MAX_RSS
-                            Maximum memory allowed to use by process, KB.
-      -c CUMULATIVE, --cumulative CUMULATIVE
-                            Recursively calculate memory used by all process
-                            children.
-
-#### Configuration Examples
-
-Restart process if the total amount of memory consumed by process and all its
-children is greater than 100M:
-
-    [eventlistener:example_check]
-    command=/usr/local/bin/supervisor_memory_check -n example_check -m 102400 -c -g example_service
-    events=TICK_60
-
-
-### Complex Check
-
-Complex check(run multiple checks at once).
-
-#### CLI
-
-    /usr/local/bin/supervisor_complex_check -h
-    usage: supervisor_complex_check [-h] -n CHECK_NAME -g PROCESS_GROUP -c
-                                    CHECK_CONFIG
-    
-    Run SupervisorD check program.
-    
-    optional arguments:
-      -h, --help            show this help message and exit
-      -n CHECK_NAME, --check-name CHECK_NAME
-                            Health check name.
-      -g PROCESS_GROUP, --process-group PROCESS_GROUP
-                            Supervisor process group name.
-      -c CHECK_CONFIG, --check-config CHECK_CONFIG
-                            Check config JSON
-
-#### Example configuration
-
-Here's example configuration using memory and http checks:
-
-    [eventlistener:example_check]
-    command=/usr/local/bin/supervisor_complex_check -n example_check -g example_service -c '{"memory":{"cumulative":true,"max_rss":4194304},"http":{"timeout":15,"port":8090,"url":"\/ping","num_retries":3}}'
-    events=TICK_60
+* supervisor_http_check: process check based on HTTP query. 
+* supervisor_tcp_check: process check based on TCP connection status.
+* supervisor_xmlrpc_check: process check based on call to XML RPC server.
+* supervisor_memory_check: process check based on amount of memory consumed by process.
+* supervisor_complex_check complex check(run multiple checks at once).
 
 
 ## Developing Custom Check Modules
@@ -281,6 +85,213 @@ Here's the example of adding custom check:
         check_runner.CheckRunner(
             'example_check', 'some_process_group', [(ExampleCheck, {})]).run()
 ```
+    
+## Out-of-box checks
+
+### HTTP Check
+
+Process check based on HTTP query.
+
+#### CLI
+
+    $ /usr/local/bin/supervisor_http_check -h
+    usage: supervisor_http_check [-h] -n CHECK_NAME -g PROCESS_GROUP -u URL -p
+                                 PORT [-t TIMEOUT] [-r NUM_RETRIES]
+    
+    Run HTTP check program.
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+      -n CHECK_NAME, --check-name CHECK_NAME
+                            Health check name.
+      -g PROCESS_GROUP, --process-group PROCESS_GROUP
+                            Supervisor process group name.
+      -u URL, --url URL     HTTP check url
+      -p PORT, --port PORT  HTTP port to query. Can be integer or regular
+                            expression which will be used to extract port from a
+                            process name.
+      -t TIMEOUT, --timeout TIMEOUT
+                            Connection timeout. Default: 15
+      -r NUM_RETRIES, --num-retries NUM_RETRIES
+                            Connection retries. Default: 2
+                            
+#### Configuration Examples
+
+Query process running on port 8080 using URL _/ping_:
+
+    [eventlistener:example_check]
+    command=/usr/local/bin/supervisor_http_check -g example_service -n example_check -u /ping -t 30 -r 3 -p 8080
+    events=TICK_60
+    
+Query process group using URL /ping. Each process is listening on it's own port.
+Each process name is formed as _some-process-name\_port_ so particular port number can
+be extracted using regular expression:
+
+    [eventlistener:example_check]
+    command=/usr/local/bin/supervisor_http_check -g example_service -n example_check -u /ping -t 30 -r 3 -p ".+_(\\d+)"    
+    events=TICK_60
+
+
+### TCP Check
+
+Process check based on TCP connection status.
+
+#### CLI
+
+    $ /usr/local/bin/supervisor_tcp_check -h
+    usage: supervisor_tcp_check [-h] -n CHECK_NAME -g PROCESS_GROUP -p PORT
+                                [-t TIMEOUT] [-r NUM_RETRIES]
+    
+    Run TCP check program.
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+      -n CHECK_NAME, --check-name CHECK_NAME
+                            Check name.
+      -g PROCESS_GROUP, --process-group PROCESS_GROUP
+                            Supervisor process group name.
+      -p PORT, --port PORT  HTTP port to query. Can be integer or regular
+                            expression which will be used to extract port from a
+                            process name.
+      -t TIMEOUT, --timeout TIMEOUT
+                            Connection timeout. Default: 15
+      -r NUM_RETRIES, --num-retries NUM_RETRIES
+                            Connection retries. Default: 2
+                            
+#### Configuration Examples
+
+Connect to process running on port 8080:
+
+    [eventlistener:example_check]
+    command=/usr/local/bin/supervisor_tcp_check -g example_service -n example_check -t 30 -r 3 -p 8080
+    events=TICK_60
+    
+Query process group when each process is listening on it's own port. 
+Each process name is formed as _some-process-name\_port_ so particular port number can
+be extracted using regular expression:
+
+    [eventlistener:example_check]
+    command=/usr/local/bin/supervisor_tcp_check -g example_service -n example_check -t 30 -r 3 -p ".+_(\\d+)"    
+    events=TICK_60                            
+
+
+### XMLRPC Check
+
+Process check based on call to XML RPC server.
+
+#### CLI
+
+    $ /usr/local/bin/supervisor_xmlrpc_check -h
+    usage: supervisor_xmlrpc_check [-h] -n CHECK_NAME -g PROCESS_GROUP [-u URL]
+                                   [-s SOCK_PATH] [-S SOCK_DIR] [-p PORT]
+                                   [-r NUM_RETRIES]
+    
+    Run XML RPC check program.
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+      -n CHECK_NAME, --check-name CHECK_NAME
+                            Health check name.
+      -g PROCESS_GROUP, --process-group PROCESS_GROUP
+                            Supervisor process group name.
+      -u URL, --url URL     HTTP check url
+      -s SOCK_PATH, --socket-path SOCK_PATH
+                            Full path to XML RPC server local socket
+      -S SOCK_DIR, --socket-dir SOCK_DIR
+                            Path to XML RPC server socket directory. Socket name
+                            will be constructed using process name:
+                            <process_name>.sock.
+      -m METHOD, --method METHOD
+                            XML RPC method name. Default is status                            
+      -p PORT, --port PORT  HTTP port to query. Can be integer or regular
+                            expression which will be used to extract port from a
+                            process name.
+      -r NUM_RETRIES, --num-retries NUM_RETRIES
+                            Connection retries. Default: 2
+
+#### Configuration Examples
+
+Call to process' XML RPC server listening on port 8080, URL /status, RPC method get_status:
+
+    [eventlistener:example_check]
+    command=/usr/local/bin/supervisor_xmlrpc_check -g example_service -n example_check -r 3 -p 8080 -u /status -m get_status
+    events=TICK_60
+    
+Call to process' XML RPC server listening on UNIX socket:
+
+    [eventlistener:example_check]
+    command=/usr/local/bin/supervisor_xmlrpc_check -g example_service -n example_check -r 3 -s /var/run/example.sock -m get_status
+    events=TICK_60
+    
+Call to process group XML RPC servers, listening on different UNIX socket. In such
+case socket directory must be specified, process socket name will be formed as <process_name>.sock:
+
+    [eventlistener:example_check]
+    command=/usr/local/bin/supervisor_xmlrpc_check -g example_service -n example_check -r 3 -S /var/run/ -m get_status
+    events=TICK_60    
+
+### Memory Check
+
+Process check based on amount of memory consumed by process.
+
+#### CLI
+
+    $ /usr/local/bin/supervisor_memory_check -h
+    usage: supervisor_memory_check [-h] -n CHECK_NAME -g PROCESS_GROUP -m MAX_RSS
+                                   [-c CUMULATIVE]
+    
+    Run memory check program.
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+      -n CHECK_NAME, --check-name CHECK_NAME
+                            Health check name.
+      -g PROCESS_GROUP, --process-group PROCESS_GROUP
+                            Supervisor process group name.
+      -m MAX_RSS, --msx-rss MAX_RSS
+                            Maximum memory allowed to use by process, KB.
+      -c CUMULATIVE, --cumulative CUMULATIVE
+                            Recursively calculate memory used by all process
+                            children.
+
+#### Configuration Examples
+
+Restart process if the total amount of memory consumed by process and all its
+children is greater than 100M:
+
+    [eventlistener:example_check]
+    command=/usr/local/bin/supervisor_memory_check -n example_check -m 102400 -c -g example_service
+    events=TICK_60
+
+
+### Complex Check
+
+Complex check(run multiple checks at once).
+
+#### CLI
+
+    $ /usr/local/bin/supervisor_complex_check -h
+    usage: supervisor_complex_check [-h] -n CHECK_NAME -g PROCESS_GROUP -c
+                                    CHECK_CONFIG
+    
+    Run SupervisorD check program.
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+      -n CHECK_NAME, --check-name CHECK_NAME
+                            Health check name.
+      -g PROCESS_GROUP, --process-group PROCESS_GROUP
+                            Supervisor process group name.
+      -c CHECK_CONFIG, --check-config CHECK_CONFIG
+                            Check config JSON
+
+#### Example configuration
+
+Here's example configuration using memory and http checks:
+
+    [eventlistener:example_check]
+    command=/usr/local/bin/supervisor_complex_check -n example_check -g example_service -c '{"memory":{"cumulative":true,"max_rss":4194304},"http":{"timeout":15,"port":8090,"url":"\/ping","num_retries":3}}'
+    events=TICK_60
 
 ## Bug reports
 
