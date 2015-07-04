@@ -30,7 +30,7 @@ def _make_argument_parser():
                         type=str, required=True, default=None,
                         help='Supervisor process group name.')
     parser.add_argument('-u', '--url', dest='url', type=str,
-                        help='HTTP check url', required=False, default=None)
+                        help='XML RPC check url', required=False, default=None)
     parser.add_argument('-s', '--socket-path', dest='sock_path', type=str,
                         help='Full path to XML RPC server local socket',
                         required=False, default=None)
@@ -46,7 +46,7 @@ def _make_argument_parser():
     parser.add_argument(
         '-p', '--port', dest='port', type=str,
         default=None, required=False,
-        help='HTTP port to query. Can be integer or regular expression which '
+        help='Port to query. Can be integer or regular expression which '
              'will be used to extract port from a process name.')
     parser.add_argument(
         '-r', '--num-retries', dest='num_retries', type=int,

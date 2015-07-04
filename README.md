@@ -192,7 +192,7 @@ Process check based on call to XML RPC server.
                             Health check name.
       -g PROCESS_GROUP, --process-group PROCESS_GROUP
                             Supervisor process group name.
-      -u URL, --url URL     HTTP check url
+      -u URL, --url URL     XML RPC check url
       -s SOCK_PATH, --socket-path SOCK_PATH
                             Full path to XML RPC server local socket
       -S SOCK_DIR, --socket-dir SOCK_DIR

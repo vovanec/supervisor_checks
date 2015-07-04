@@ -32,7 +32,7 @@ def _make_argument_parser():
     parser.add_argument(
         '-p', '--port', dest='port', type=str,
         default=None, required=True,
-        help='HTTP port to query. Can be integer or regular expression which '
+        help='TCP port to query. Can be integer or regular expression which '
              'will be used to extract port from a process name.')
     parser.add_argument(
         '-t', '--timeout', dest='timeout', type=int, required=False,
