@@ -294,7 +294,7 @@ Here's example configuration using memory and http checks:
 
 ## Acknowledgement
 
-This is heavily inspired by [Superlance](https://superlance.readthedocs.org/en/latest/) package.
+This is inspired by [Superlance](https://superlance.readthedocs.org/en/latest/) plugin package.
 
 Though, while [Superlance](https://superlance.readthedocs.org/en/latest/) is basically the set
 of feature-rich health check programs, `supervisor_checks` package is mostly focused on providing
