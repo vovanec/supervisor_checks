@@ -42,14 +42,14 @@ Process check based on HTTP query.
                             
 #### Configuration Examples
 
-Query process running on port 8080 using URL /ping:
+Query process running on port 8080 using URL _/ping_:
 
     [eventlistener:example_check]
     command=/usr/local/bin/supervisor_http_check -g example_service -n example_check -u /ping -t 30 -r 3 -p 8080
     events=TICK_60
     
 Query process group using URL /ping. Each process is listening on it's own port.
-Each process name is formed as <example_app>_port so particular port number can
+Each process name is formed as <example_app>\_port so particular port number can
 be extracted using regular expression:
 
     [eventlistener:example_check]
@@ -227,6 +227,7 @@ it can be easily extended by adding application-specific custom health checks.
 To implement custom check class, _check_modules.base.BaseCheck_ class must
 be inherited:
 
+```python
     class BaseCheck(object):
         """Base class for checks.
         """
@@ -256,9 +257,11 @@ be inherited:
                       'Required `url` parameter is missing in %s check config.' % (
                           self.NAME,))
             """
+```
 
 Here's the example of adding custom check:
 
+```python
     from supervisor_checks.check_modules import base
     from supervisor_checks import check_runner
 
@@ -277,7 +280,7 @@ Here's the example of adding custom check:
     
         check_runner.CheckRunner(
             'example_check', 'some_process_group', [(ExampleCheck, {})]).run()
-
+```
 
 ## Bug reports
 
