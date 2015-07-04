@@ -22,6 +22,7 @@ Here's the list of check programs package provides out-of-box:
 * _supervisor_memory_check_: process check based on amount of memory consumed by process.
 * _supervisor_complex_check_: complex check(run multiple checks at once).
 
+For now, it is developed and supposed to work primarily with Python 3 and Supervisor 4 branch. There's nominal Python 2.x support but it's not tested. Also, it does depend on Supervisor 4 [pull request 625](https://github.com/Supervisor/supervisor/pull/625), which adds graceful event listener shutdown). It's probably possible to run it with Supervisor 3 APIs, however it's not tested as well.
 
 ## Developing Custom Check Modules
 
