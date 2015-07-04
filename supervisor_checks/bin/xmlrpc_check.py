@@ -39,6 +39,10 @@ def _make_argument_parser():
                              'name will be constructed using process name: '
                              '<process_name>.sock.',
                         required=False, default=None)
+    parser.add_argument('-m', '--method', dest='method', type=str,
+                        help='XML RPC method name. Default is %s' % (
+                            xmlrpc.DEFAULT_METHOD,), required=False,
+                        default=xmlrpc.DEFAULT_METHOD)
     parser.add_argument(
         '-p', '--port', dest='port', type=str,
         default=None, required=False,
@@ -61,7 +65,8 @@ def main():
                                            'sock_path': args.sock_path,
                                            'sock_dir': args.sock_dir,
                                            'num_retries': args.num_retries,
-                                           'port': args.port})]
+                                           'port': args.port,
+                                           'method': args.method})]
 
     return check_runner.CheckRunner(
         args.check_name, args.process_group, checks_config).run()

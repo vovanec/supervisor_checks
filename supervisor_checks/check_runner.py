@@ -36,7 +36,8 @@ class CheckRunner(object):
 
         :param str check_name: the name of check to display in log.
         :param str process_group: the name of the process group.
-        :param list checks_config: the list of check module configurations.
+        :param list checks_config: the list of check module configurations
+               in format [(check_class, check_configuration_dictionary)]
         :param dict env: environment.
         """
 

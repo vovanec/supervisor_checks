@@ -1,3 +1,6 @@
+"""Error classes.
+"""
+
 __author__ = 'vovanec@gmail.com'
 
 

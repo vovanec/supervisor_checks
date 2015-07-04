@@ -3,7 +3,7 @@
 Example configuration:
 
 [eventlistener:example_check]
-command=/usr/local/bin/supervisor_tcp_check -n example_service_check -u /ping -t 30 -r 3 -g example_service
+command=/usr/local/bin/supervisor_tcp_check -n example_service_check -u /ping -t 30 -r 3 -g example_service -p 8080
 events=TICK_60
 """
 
