@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Supervisor Health Checks by vovanec</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Supervisor Health Checks</h1>
+      <h2 class="project-tagline">Framework to build health checks for Supervisor-based services.</h2>
+      <a href="https://github.com/vovanec/supervisor_checks" class="btn">View on GitHub</a>
+      <a href="https://github.com/vovanec/supervisor_checks/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/vovanec/supervisor_checks/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="supervisor-health-checks" class="anchor" href="#supervisor-health-checks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Supervisor Health Checks</h1>
+
+<p>Framework to build health checks for Supervisor-based services.</p>
+
+<p>Health check programs are supposed to run as event listeners in <a href="http://supervisord.org">Supervisor</a>
+environment. Supervisor will attempt to restart monitored processes on check
+failure.</p>
+
+<p>Here's typical configuration example:</p>
+
+<pre><code>[eventlistener:example_check]
+command=python &lt;path_to_supervisor_check_program&gt;
+stderr_logfile = /var/log/supervisor/supervisor_example_check-stderr.log
+stdout_logfile = /var/log/supervisor/supervisor_example_check-stdout.log
+events=TICK_60
+</code></pre>
+
+<p>Here's the list of check programs package provides out-of-box:</p>
+
+<ul>
+<li>
+<em>supervisor_http_check</em>: process check based on HTTP query. </li>
+<li>
+<em>supervisor_tcp_check</em>: process check based on TCP connection status.</li>
+<li>
+<em>supervisor_xmlrpc_check</em>: process check based on call to XML RPC server.</li>
+<li>
+<em>supervisor_memory_check</em>: process check based on amount of memory consumed by process.</li>
+<li>
+<em>supervisor_complex_check</em>: complex check(run multiple checks at once).</li>
+</ul>
+
+<h2>
+<a id="developing-custom-check-modules" class="anchor" href="#developing-custom-check-modules" aria-hidden="true"><span class="octicon octicon-link"></span></a>Developing Custom Check Modules</h2>
+
+<p>While framework provides the good set of ready-for-use health check classes,
+it can be easily extended by adding application-specific custom health checks.</p>
+
+<p>To implement custom check class, <em>check_modules.base.BaseCheck</em> class must
+be inherited:</p>
+
+<div class="highlight highlight-python"><pre>    <span class="pl-k">class</span> <span class="pl-en">BaseCheck</span>(<span class="pl-e"><span class="pl-c1">object</span></span>):
+        <span class="pl-s"><span class="pl-pds">"""</span>Base class for checks.</span>
+<span class="pl-s">        <span class="pl-pds">"""</span></span>
+
+        NAME <span class="pl-k">=</span> <span class="pl-c1">None</span>
+
+        <span class="pl-k">def</span> <span class="pl-en"><span class="pl-c1">__call__</span></span>(<span class="pl-smi">self</span>, <span class="pl-smi">process_spec</span>):
+            <span class="pl-s"><span class="pl-pds">"""</span>Run single check.</span>
+<span class="pl-s"></span>
+<span class="pl-s">            :param dict process_spec: process specification dictionary as returned</span>
+<span class="pl-s">                   by SupervisorD API.</span>
+<span class="pl-s"></span>
+<span class="pl-s">            :return: True is check succeeded, otherwise False. If check failed -</span>
+<span class="pl-s">                     monitored process will be automatically restarted.</span>
+<span class="pl-s"></span>
+<span class="pl-s">            :rtype: bool</span>
+<span class="pl-s">            <span class="pl-pds">"""</span></span>
+
+        <span class="pl-k">def</span> <span class="pl-en">_validate_config</span>(<span class="pl-smi">self</span>):
+            <span class="pl-s"><span class="pl-pds">"""</span>Method may be implemented in subclasses. Should return None or</span>
+<span class="pl-s">            raise InvalidCheckConfig in case if configuration is invalid.</span>
+<span class="pl-s"></span>
+<span class="pl-s">            Here's typical example of parameter check:</span>
+<span class="pl-s"></span>
+<span class="pl-s">              if 'url' not in self._config:</span>
+<span class="pl-s">                  raise errors.InvalidCheckConfig(</span>
+<span class="pl-s">                      'Required `url` parameter is missing in <span class="pl-c1">%s</span> check config.' % (</span>
+<span class="pl-s">                          self.NAME,))</span>
+<span class="pl-s">            <span class="pl-pds">"""</span></span></pre></div>
+
+<p>Here's the example of adding custom check:</p>
+
+<div class="highlight highlight-python"><pre>    <span class="pl-k">from</span> supervisor_checks.check_modules <span class="pl-k">import</span> base
+    <span class="pl-k">from</span> supervisor_checks <span class="pl-k">import</span> check_runner
+
+    <span class="pl-k">class</span> <span class="pl-en">ExampleCheck</span>(<span class="pl-e">base.BaseCheck</span>):
+
+        NAME <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>example<span class="pl-pds">'</span></span>
+
+        <span class="pl-k">def</span> <span class="pl-en"><span class="pl-c1">__call__</span></span>(<span class="pl-smi">self</span>, <span class="pl-smi">process_spec</span>):
+
+            <span class="pl-c"># Always return True</span>
+            <span class="pl-k">return</span> <span class="pl-c1">True</span>
+
+    <span class="pl-k">if</span> <span class="pl-c1">__name__</span> <span class="pl-k">==</span> <span class="pl-s"><span class="pl-pds">'</span>__main__<span class="pl-pds">'</span></span>:
+
+        check_runner.CheckRunner(
+            <span class="pl-s"><span class="pl-pds">'</span>example_check<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>some_process_group<span class="pl-pds">'</span></span>, [(ExampleCheck, {})]).run()</pre></div>
+
+<h2>
+<a id="out-of-box-checks" class="anchor" href="#out-of-box-checks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Out-of-box checks</h2>
+
+<h3>
+<a id="http-check" class="anchor" href="#http-check" aria-hidden="true"><span class="octicon octicon-link"></span></a>HTTP Check</h3>
+
+<p>Process check based on HTTP query.</p>
+
+<h4>
+<a id="cli" class="anchor" href="#cli" aria-hidden="true"><span class="octicon octicon-link"></span></a>CLI</h4>
+
+<pre><code>$ /usr/local/bin/supervisor_http_check -h
+usage: supervisor_http_check [-h] -n CHECK_NAME -g PROCESS_GROUP -u URL -p
+                             PORT [-t TIMEOUT] [-r NUM_RETRIES]
+
+Run HTTP check program.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -n CHECK_NAME, --check-name CHECK_NAME
+                        Health check name.
+  -g PROCESS_GROUP, --process-group PROCESS_GROUP
+                        Supervisor process group name.
+  -u URL, --url URL     HTTP check url
+  -p PORT, --port PORT  HTTP port to query. Can be integer or regular
+                        expression which will be used to extract port from a
+                        process name.
+  -t TIMEOUT, --timeout TIMEOUT
+                        Connection timeout. Default: 15
+  -r NUM_RETRIES, --num-retries NUM_RETRIES
+                        Connection retries. Default: 2
+</code></pre>
+
+<h4>
+<a id="configuration-examples" class="anchor" href="#configuration-examples" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuration Examples</h4>
+
+<p>Query process running on port 8080 using URL <em>/ping</em>:</p>
+
+<pre><code>[eventlistener:example_check]
+command=/usr/local/bin/supervisor_http_check -g example_service -n example_check -u /ping -t 30 -r 3 -p 8080
+events=TICK_60
+</code></pre>
+
+<p>Query process group using URL /ping. Each process is listening on it's own port.
+Each process name is formed as <em>some-process-name_port</em> so particular port number can
+be extracted using regular expression:</p>
+
+<pre><code>[eventlistener:example_check]
+command=/usr/local/bin/supervisor_http_check -g example_service -n example_check -u /ping -t 30 -r 3 -p ".+_(\\d+)"    
+events=TICK_60
+</code></pre>
+
+<h3>
+<a id="tcp-check" class="anchor" href="#tcp-check" aria-hidden="true"><span class="octicon octicon-link"></span></a>TCP Check</h3>
+
+<p>Process check based on TCP connection status.</p>
+
+<h4>
+<a id="cli-1" class="anchor" href="#cli-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>CLI</h4>
+
+<pre><code>$ /usr/local/bin/supervisor_tcp_check -h
+usage: supervisor_tcp_check [-h] -n CHECK_NAME -g PROCESS_GROUP -p PORT
+                            [-t TIMEOUT] [-r NUM_RETRIES]
+
+Run TCP check program.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -n CHECK_NAME, --check-name CHECK_NAME
+                        Check name.
+  -g PROCESS_GROUP, --process-group PROCESS_GROUP
+                        Supervisor process group name.
+  -p PORT, --port PORT  TCP port to query. Can be integer or regular
+                        expression which will be used to extract port from a
+                        process name.
+  -t TIMEOUT, --timeout TIMEOUT
+                        Connection timeout. Default: 15
+  -r NUM_RETRIES, --num-retries NUM_RETRIES
+                        Connection retries. Default: 2
+</code></pre>
+
+<h4>
+<a id="configuration-examples-1" class="anchor" href="#configuration-examples-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuration Examples</h4>
+
+<p>Connect to process running on port 8080:</p>
+
+<pre><code>[eventlistener:example_check]
+command=/usr/local/bin/supervisor_tcp_check -g example_service -n example_check -t 30 -r 3 -p 8080
+events=TICK_60
+</code></pre>
+
+<p>Query process group when each process is listening on it's own port. 
+Each process name is formed as <em>some-process-name_port</em> so particular port number can
+be extracted using regular expression:</p>
+
+<pre><code>[eventlistener:example_check]
+command=/usr/local/bin/supervisor_tcp_check -g example_service -n example_check -t 30 -r 3 -p ".+_(\\d+)"    
+events=TICK_60                            
+</code></pre>
+
+<h3>
+<a id="xmlrpc-check" class="anchor" href="#xmlrpc-check" aria-hidden="true"><span class="octicon octicon-link"></span></a>XMLRPC Check</h3>
+
+<p>Process check based on call to XML RPC server.</p>
+
+<h4>
+<a id="cli-2" class="anchor" href="#cli-2" aria-hidden="true"><span class="octicon octicon-link"></span></a>CLI</h4>
+
+<pre><code>$ /usr/local/bin/supervisor_xmlrpc_check -h
+usage: supervisor_xmlrpc_check [-h] -n CHECK_NAME -g PROCESS_GROUP [-u URL]
+                               [-s SOCK_PATH] [-S SOCK_DIR] [-p PORT]
+                               [-r NUM_RETRIES]
+
+Run XML RPC check program.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -n CHECK_NAME, --check-name CHECK_NAME
+                        Health check name.
+  -g PROCESS_GROUP, --process-group PROCESS_GROUP
+                        Supervisor process group name.
+  -u URL, --url URL     XML RPC check url
+  -s SOCK_PATH, --socket-path SOCK_PATH
+                        Full path to XML RPC server local socket
+  -S SOCK_DIR, --socket-dir SOCK_DIR
+                        Path to XML RPC server socket directory. Socket name
+                        will be constructed using process name:
+                        &lt;process_name&gt;.sock.
+  -m METHOD, --method METHOD
+                        XML RPC method name. Default is status                            
+  -p PORT, --port PORT  Port to query. Can be integer or regular
+                        expression which will be used to extract port from a
+                        process name.
+  -r NUM_RETRIES, --num-retries NUM_RETRIES
+                        Connection retries. Default: 2
+</code></pre>
+
+<h4>
+<a id="configuration-examples-2" class="anchor" href="#configuration-examples-2" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuration Examples</h4>
+
+<p>Call to process' XML RPC server listening on port 8080, URL /status, RPC method get_status:</p>
+
+<pre><code>[eventlistener:example_check]
+command=/usr/local/bin/supervisor_xmlrpc_check -g example_service -n example_check -r 3 -p 8080 -u /status -m get_status
+events=TICK_60
+</code></pre>
+
+<p>Call to process' XML RPC server listening on UNIX socket:</p>
+
+<pre><code>[eventlistener:example_check]
+command=/usr/local/bin/supervisor_xmlrpc_check -g example_service -n example_check -r 3 -s /var/run/example.sock -m get_status
+events=TICK_60
+</code></pre>
+
+<p>Call to process group XML RPC servers, listening on different UNIX socket. In such
+case socket directory must be specified, process socket name will be formed as .sock:</p>
+
+<pre><code>[eventlistener:example_check]
+command=/usr/local/bin/supervisor_xmlrpc_check -g example_service -n example_check -r 3 -S /var/run/ -m get_status
+events=TICK_60    
+</code></pre>
+
+<h3>
+<a id="memory-check" class="anchor" href="#memory-check" aria-hidden="true"><span class="octicon octicon-link"></span></a>Memory Check</h3>
+
+<p>Process check based on amount of memory consumed by process.</p>
+
+<h4>
+<a id="cli-3" class="anchor" href="#cli-3" aria-hidden="true"><span class="octicon octicon-link"></span></a>CLI</h4>
+
+<pre><code>$ /usr/local/bin/supervisor_memory_check -h
+usage: supervisor_memory_check [-h] -n CHECK_NAME -g PROCESS_GROUP -m MAX_RSS
+                               [-c CUMULATIVE]
+
+Run memory check program.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -n CHECK_NAME, --check-name CHECK_NAME
+                        Health check name.
+  -g PROCESS_GROUP, --process-group PROCESS_GROUP
+                        Supervisor process group name.
+  -m MAX_RSS, --msx-rss MAX_RSS
+                        Maximum memory allowed to use by process, KB.
+  -c CUMULATIVE, --cumulative CUMULATIVE
+                        Recursively calculate memory used by all process
+                        children.
+</code></pre>
+
+<h4>
+<a id="configuration-examples-3" class="anchor" href="#configuration-examples-3" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuration Examples</h4>
+
+<p>Restart process if the total amount of memory consumed by process and all its
+children is greater than 100M:</p>
+
+<pre><code>[eventlistener:example_check]
+command=/usr/local/bin/supervisor_memory_check -n example_check -m 102400 -c -g example_service
+events=TICK_60
+</code></pre>
+
+<h3>
+<a id="complex-check" class="anchor" href="#complex-check" aria-hidden="true"><span class="octicon octicon-link"></span></a>Complex Check</h3>
+
+<p>Complex check(run multiple checks at once).</p>
+
+<h4>
+<a id="cli-4" class="anchor" href="#cli-4" aria-hidden="true"><span class="octicon octicon-link"></span></a>CLI</h4>
+
+<pre><code>$ /usr/local/bin/supervisor_complex_check -h
+usage: supervisor_complex_check [-h] -n CHECK_NAME -g PROCESS_GROUP -c
+                                CHECK_CONFIG
+
+Run SupervisorD check program.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -n CHECK_NAME, --check-name CHECK_NAME
+                        Health check name.
+  -g PROCESS_GROUP, --process-group PROCESS_GROUP
+                        Supervisor process group name.
+  -c CHECK_CONFIG, --check-config CHECK_CONFIG
+                        Check config JSON
+</code></pre>
+
+<h4>
+<a id="example-configuration" class="anchor" href="#example-configuration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example configuration</h4>
+
+<p>Here's example configuration using memory and http checks:</p>
+
+<pre><code>[eventlistener:example_check]
+command=/usr/local/bin/supervisor_complex_check -n example_check -g example_service -c '{"memory":{"cumulative":true,"max_rss":4194304},"http":{"timeout":15,"port":8090,"url":"\/ping","num_retries":3}}'
+events=TICK_60
+</code></pre>
+
+<h2>
+<a id="acknowledgement" class="anchor" href="#acknowledgement" aria-hidden="true"><span class="octicon octicon-link"></span></a>Acknowledgement</h2>
+
+<p>This is inspired by <a href="https://superlance.readthedocs.org/en/latest/">Superlance</a> plugin package.</p>
+
+<p>Though, while <a href="https://superlance.readthedocs.org/en/latest/">Superlance</a> is basically the set
+of feature-rich health check programs, <code>supervisor_checks</code> package is mostly focused on providing
+the framework to easily implement application-specific health checks of any complexity.</p>
+
+<h2>
+<a id="bug-reports" class="anchor" href="#bug-reports" aria-hidden="true"><span class="octicon octicon-link"></span></a>Bug reports</h2>
+
+<p>Please file here: <a href="https://github.com/vovanec/supervisor_checks/issues">https://github.com/vovanec/supervisor_checks/issues</a></p>
+
+<p>Or contact me directly: <a href="mailto:vovanec@gmail.com">vovanec@gmail.com</a> </p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/vovanec/supervisor_checks">Supervisor Health Checks</a> is maintained by <a href="https://github.com/vovanec">vovanec</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
+
