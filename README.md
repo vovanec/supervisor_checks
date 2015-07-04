@@ -49,7 +49,7 @@ Query process running on port 8080 using URL _/ping_:
     events=TICK_60
     
 Query process group using URL /ping. Each process is listening on it's own port.
-Each process name is formed as <example_app>\_port so particular port number can
+Each process name is formed as _some-process-name\_port_ so particular port number can
 be extracted using regular expression:
 
     [eventlistener:example_check]
@@ -92,7 +92,7 @@ Connect to process running on port 8080:
     events=TICK_60
     
 Query process group when each process is listening on it's own port. 
-Process name is formed as <example_app>_port so particular port number can
+Each process name is formed as _some-process-name\_port_ so particular port number can
 be extracted using regular expression:
 
     [eventlistener:example_check]
