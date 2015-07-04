@@ -16,11 +16,11 @@ Here's typical configuration example:
     
 Here's the list of check programs package provides out-of-box:
     
-* supervisor_http_check: process check based on HTTP query. 
-* supervisor_tcp_check: process check based on TCP connection status.
-* supervisor_xmlrpc_check: process check based on call to XML RPC server.
-* supervisor_memory_check: process check based on amount of memory consumed by process.
-* supervisor_complex_check complex check(run multiple checks at once).
+* _supervisor_http_check_: process check based on HTTP query. 
+* _supervisor_tcp_check_: process check based on TCP connection status.
+* _supervisor_xmlrpc_check_: process check based on call to XML RPC server.
+* _supervisor_memory_check_: process check based on amount of memory consumed by process.
+* _supervisor_complex_check_: complex check(run multiple checks at once).
 
 
 ## Developing Custom Check Modules
