@@ -33,8 +33,7 @@ def _make_argument_parser():
         '-m', '--msx-rss', dest='max_rss', type=int, required=True,
         help='Maximum memory allowed to use by process, KB.')
     parser.add_argument(
-        '-c', '--cumulative', dest='cumulative', type=bool, required=False,
-        default=False,
+        '-c', '--cumulative', dest='cumulative', action='store_true',
         help='Recursively calculate memory used by all process children.')
 
     return parser
