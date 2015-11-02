@@ -8,6 +8,7 @@ __author__ = 'vovanec@gmail.com'
 import concurrent.futures
 import datetime
 import os
+import select
 import signal
 import sys
 import threading
@@ -25,6 +26,14 @@ EVENT_NAME_KEY = 'eventname'
 
 MAX_THREADS = 16
 TICK_EVENTS = {'TICK_5', 'TICK_60', 'TICK_3600'}
+
+
+class AboutToShutdown(Exception):
+    """Raised from supervisor events read loop, when
+    application is about to shutdown.
+    """
+
+    pass
 
 
 class CheckRunner(object):
@@ -62,16 +71,14 @@ class CheckRunner(object):
         while not self._stop_event.is_set():
 
             try:
-                headers, _ = childutils.listener.wait(
-                    sys.stdin, sys.stdout, waiter=self._stop_event)
-            except childutils.WaitInterrupted:
+                event_type = self._wait_for_supervisor_event()
+            except AboutToShutdown:
                 self._log(
                     'Health check for %s process group has been told to stop.',
                     self._process_group)
 
                 break
 
-            event_type = headers[EVENT_NAME_KEY]
             if event_type in TICK_EVENTS:
                 self._check_processes()
             else:
@@ -202,3 +209,26 @@ class CheckRunner(object):
         self._log('Got signal %s', signum)
 
         self._stop_event.set()
+
+    def _wait_for_supervisor_event(self):
+        """Wait for supervisor events.
+        """
+
+        childutils.listener.ready(sys.stdout)
+
+        while not self._stop_event.is_set():
+            try:
+                rdfs, _, _ = select.select([sys.stdin], [], [], .5)
+            except InterruptedError:
+                continue
+
+            if rdfs:
+                headers = childutils.get_headers(rdfs[0].readline())
+                # Read the payload to make read buffer empty.
+                _ = sys.stdin.read(int(headers['len']))
+                event_type = headers[EVENT_NAME_KEY]
+                self._log('Received %s event from supervisor', event_type)
+
+                return event_type
+
+        raise AboutToShutdown
