@@ -1,18 +1,15 @@
 """Process check based on call to XML RPC server.
 """
 
-import supervisor_checks.errors
-
-__author__ = 'vkuznet@juniper.net'
-
-
 import supervisor.xmlrpc
-
 from supervisor.compat import xmlrpclib
 
 from supervisor_checks import errors
 from supervisor_checks import utils
 from supervisor_checks.check_modules import base
+
+__author__ = 'vovanec@gmail.com'
+
 
 DEFAULT_RETRIES = 2
 DEFAULT_METHOD = 'status'
@@ -71,12 +68,12 @@ class XMLRPCCheck(base.BaseCheck):
 
         param_intersection = one_of_required.intersection(self._config)
         if not param_intersection:
-            raise supervisor_checks.errors.InvalidCheckConfig(
+            raise errors.InvalidCheckConfig(
                 'One of required parameters: `url`, `sock_path` or `sock_dir` '
                 'is missing in %s check config.' % (self.NAME,))
 
         if len(param_intersection) > 1:
-            raise supervisor_checks.errors.InvalidCheckConfig(
+            raise errors.InvalidCheckConfig(
                 '`url`, `sock_path` and `sock_dir` must be mutually exclusive'
                 'in %s check config.' % (self.NAME,))
 

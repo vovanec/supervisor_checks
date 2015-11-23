@@ -7,14 +7,13 @@ command=/usr/local/bin/supervisor_http_check -g example_service -n example_check
 events=TICK_60
 """
 
-__author__ = 'vovanec@gmail.com'
-
-
 import argparse
 import sys
 
 from supervisor_checks import check_runner
 from supervisor_checks.check_modules import http
+
+__author__ = 'vovanec@gmail.com'
 
 
 def _make_argument_parser():

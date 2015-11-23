@@ -1,12 +1,12 @@
 """Process check based on RSS memory usage.
 """
 
-__author__ = 'vovanec@gmail.com'
-
 import psutil
 
 from supervisor_checks import errors
 from supervisor_checks.check_modules import base
+
+__author__ = 'vovanec@gmail.com'
 
 
 class MemoryCheck(base.BaseCheck):

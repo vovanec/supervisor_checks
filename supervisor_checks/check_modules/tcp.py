@@ -1,13 +1,13 @@
 """Process check based on TCP connection status.
 """
 
-__author__ = 'vovanec@gmail.com'
-
 import socket
 
 from supervisor_checks import errors
 from supervisor_checks import utils
 from supervisor_checks.check_modules import base
+
+__author__ = 'vovanec@gmail.com'
 
 
 DEFAULT_RETRIES = 2

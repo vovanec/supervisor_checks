@@ -1,8 +1,6 @@
 """Utility functions.
 """
 
-__author__ = 'vovanec@gmail.com'
-
 
 import contextlib
 import functools
@@ -10,6 +8,8 @@ import re
 import time
 
 from supervisor_checks import errors
+
+__author__ = 'vovanec@gmail.com'
 
 
 RETRY_SLEEP_TIME = 3
@@ -50,6 +50,8 @@ class retry_errors(object):
     @contextlib.contextmanager
     def retry_context(self, func):
         """Use retry_errors object as a context manager.
+
+        :param func: decorated function.
         """
 
         yield self(func)

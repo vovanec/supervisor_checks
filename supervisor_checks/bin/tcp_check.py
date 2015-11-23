@@ -7,14 +7,14 @@ command=/usr/local/bin/supervisor_tcp_check -n example_service_check -u /ping -t
 events=TICK_60
 """
 
-__author__ = 'vovanec@gmail.net'
-
-
 import argparse
 import sys
 
 from supervisor_checks import check_runner
 from supervisor_checks.check_modules import tcp
+
+
+__author__ = 'vovanec@gmail.net'
 
 
 def _make_argument_parser():

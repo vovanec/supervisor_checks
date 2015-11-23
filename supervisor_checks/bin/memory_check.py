@@ -7,14 +7,14 @@ command=/usr/local/bin/supervisor_memory_check -n example_check -m 102400 -c -g 
 events=TICK_60
 """
 
-__author__ = 'vovanec@gmail.com'
-
-
 import argparse
 import sys
 
 from supervisor_checks import check_runner
 from supervisor_checks.check_modules import memory
+
+
+__author__ = 'vovanec@gmail.com'
 
 
 def _make_argument_parser():

@@ -7,8 +7,6 @@ command=/usr/local/bin/supervisor_complex_check -n example_check -g example_serv
 events=TICK_60
 """
 
-__author__ = 'vovanec@gmail.com'
-
 
 import argparse
 import json
@@ -19,6 +17,8 @@ from supervisor_checks.check_modules import http
 from supervisor_checks.check_modules import memory
 from supervisor_checks.check_modules import tcp
 from supervisor_checks.check_modules import xmlrpc
+
+__author__ = 'vovanec@gmail.com'
 
 
 CHECK_CLASSES = {http.HTTPCheck.NAME: http.HTTPCheck,

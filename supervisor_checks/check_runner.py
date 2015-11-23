@@ -2,9 +2,6 @@
 against the process running under SupervisorD.
 """
 
-__author__ = 'vovanec@gmail.com'
-
-
 import concurrent.futures
 import datetime
 import os
@@ -17,6 +14,9 @@ from supervisor import childutils
 from supervisor.compat import xmlrpclib
 from supervisor.options import make_namespec
 from supervisor.states import ProcessStates
+
+__author__ = 'vovanec@gmail.com'
+
 
 # Process spec keys
 STATE_KEY = 'state'
