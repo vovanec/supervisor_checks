@@ -3,8 +3,8 @@
 Framework to build health checks for Supervisor-based services.
 
 Health check programs are supposed to run as event listeners in [Supervisor](http://supervisord.org)
-environment. Supervisor will attempt to restart monitored processes on check
-failure.
+environment. On check failure Supervisor will attempt to restart monitored
+process.
  
 Here's typical configuration example:
 
