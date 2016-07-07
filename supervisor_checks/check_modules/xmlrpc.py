@@ -2,11 +2,11 @@
 """
 
 import supervisor.xmlrpc
-from supervisor.compat import xmlrpclib
 
 from supervisor_checks import errors
 from supervisor_checks import utils
 from supervisor_checks.check_modules import base
+from supervisor_checks.compat import xmlrpclib
 
 __author__ = 'vovanec@gmail.com'
 

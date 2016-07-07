@@ -11,9 +11,10 @@ import sys
 import threading
 
 from supervisor import childutils
-from supervisor.compat import xmlrpclib
 from supervisor.options import make_namespec
 from supervisor.states import ProcessStates
+
+from supervisor_checks.compat import xmlrpclib
 
 __author__ = 'vovanec@gmail.com'
 

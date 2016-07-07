@@ -1,11 +1,10 @@
 """Process check based on HTTP query.
 """
 
-from supervisor.compat import httplib
-
 from supervisor_checks import errors
 from supervisor_checks import utils
 from supervisor_checks.check_modules import base
+from supervisor_checks.compat import httplib
 
 __author__ = 'vovanec@gmail.com'
 
