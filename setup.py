@@ -22,15 +22,15 @@ tests_require = install_requires + []
 setup(
     name='supervisor_checks',
     packages=find_packages(),
-    version='0.4.1',
+    version='0.4.9',
     description='Framework to build health checks for Supervisor-based services.',
     author='Vovan Kuznetsov',
     author_email='vovanec@gmail.com',
     maintainer_email='vovanec@gmail.com',
     url='https://github.com/vovanec/supervisor_checks',
-    download_url='https://github.com/vovanec/supervisor_checks/tarball/0.4.1',
+    download_url='https://github.com/vovanec/supervisor_checks/tarball/0.4.9',
     keywords=['supervisor', 'event', 'listener', 'eventlistener',
-              'http', 'memory', 'xmlrpc', 'health', 'check', 'monitor'],
+              'http', 'memory', 'xmlrpc', 'health', 'check', 'monitor', 'cpu'],
     license='MIT',
     classifiers=['License :: OSI Approved :: MIT License',
                  'Development Status :: 4 - Beta',
@@ -56,6 +56,7 @@ setup(
     entry_points={
         'console_scripts': [
             'supervisor_memory_check=supervisor_checks.bin.memory_check:main',
+            'supervisor_cpu_check=supervisor_checks.bin.cpu_check:main',
             'supervisor_http_check=supervisor_checks.bin.http_check:main',
             'supervisor_tcp_check=supervisor_checks.bin.tcp_check:main',
             'supervisor_xmlrpc_check=supervisor_checks.bin.xmlrpc_check:main',

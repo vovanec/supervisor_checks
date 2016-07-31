@@ -20,6 +20,7 @@ Here's the list of check programs package provides out-of-box:
 * _supervisor_tcp_check_: process check based on TCP connection status.
 * _supervisor_xmlrpc_check_: process check based on call to XML RPC server.
 * _supervisor_memory_check_: process check based on amount of memory consumed by process.
+* _supervisor_cpu_check_: process check based on CPU percent usage within time interval.
 * _supervisor_complex_check_: complex check(run multiple checks at once).
 
 For now, it is developed and supposed to work primarily with Python 3 and
@@ -263,6 +264,39 @@ children is greater than 100M:
     [eventlistener:example_check]
     command=/usr/local/bin/supervisor_memory_check -n example_check -m 102400 -c -g example_service
     events=TICK_60
+
+### CPU Check
+
+Process check based on CPU percent usage within specified time interval.
+
+#### CLI
+
+    $ /usr/local/bin/supervisor_cpu_check -h
+    usage: supervisor_cpu_check [-h] -n CHECK_NAME -g PROCESS_GROUP -p MAX_CPU -i INTERVAL
+
+    Run memory check program.
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -n CHECK_NAME, --check-name CHECK_NAME
+                            Health check name.
+      -g PROCESS_GROUP, --process-group PROCESS_GROUP
+                            Supervisor process group name.
+      -p MAX_CPU, --max-cpu-percent MAX_CPU
+                            Maximum CPU percent usage allowed to use by process
+                            within time interval.
+      -i INTERVAL, --interval INTERVAL
+                            How long process is allowed to use CPU over threshold,
+                            seconds.
+
+
+#### Configuration Examples
+
+Restart process when it consumes more than 100% CPU within 30 minutes:
+
+[eventlistener:example_check]
+command=/usr/local/bin/supervisor_cpu_check -n example_check -p 100 -i 1800 -g example_service
+events=TICK_60
 
 
 ### Complex Check
