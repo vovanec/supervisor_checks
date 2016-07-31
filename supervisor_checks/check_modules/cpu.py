@@ -35,28 +35,36 @@ class CPUCheck(base.BaseCheck):
         process_name = process_spec['name']
 
         cpu_pct = self._get_cpu_percent(pid, process_name)
-        self._log('CPU percent used by process %s is %s%%',
+        self._log('CPU percent used by process %s is %s',
                   process_name, cpu_pct)
 
         if cpu_pct > self._config['max_cpu']:
             if (time.time() - self._first_seen_over_threshold >
                     self._check_interval):
 
-                self._log('CPU usage for process %s was above the configured '
-                          'threshold %s%% for %s seconds.',
-                          process_name, self._config['max_cpu'],
-                          self._check_interval)
+                self._log(
+                    'CPU usage for process %s has been above the configured '
+                    'threshold %s for maximum allowed interval: %s seconds.',
+                    process_name, self._config['max_cpu'], self._check_interval)
+
+                self._first_seen_over_threshold = float('inf')
+                self._over_threshold = False
 
                 return False
             elif not self._over_threshold:
-                self._log('CPU usage for process %s is above the threshold '
-                          '%s%%.', process_name, self._config['max_cpu'],)
+                self._log('CPU usage for process %s is above the threshold %s.',
+                          process_name, self._config['max_cpu'],)
+
                 self._first_seen_over_threshold = time.time()
                 self._over_threshold = True
+            else:
+                self._log('CPU usage for process %s is above the threshold '
+                          '%s for %s seconds.', process_name,
+                          self._config['max_cpu'], self._check_interval)
         else:
             if self._over_threshold:
                 self._log('CPU usage for process %s dropped below the '
-                          'threshold %s%% after %s seconds.', process_name,
+                          'threshold %s after %s seconds.', process_name,
                           self._config['max_cpu'],  self._check_interval)
 
             self._first_seen_over_threshold = float('inf')
