@@ -85,7 +85,7 @@ class CPUCheck(base.BaseCheck):
 
         self._log('Checking for CPU percent used by process %s.', process_name)
 
-        return psutil.Process(pid).cpu_percent()
+        return psutil.Process(pid).cpu_percent(PSUTIL_CHECK_INTERVAL)
 
     def _validate_config(self):
 
