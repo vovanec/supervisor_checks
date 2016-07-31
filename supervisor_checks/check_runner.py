@@ -112,20 +112,20 @@ class CheckRunner(object):
         """
 
         for check in self._checks:
-            self._log('Performing %s check for process name %s',
+            self._log('Performing `%s` check for process name %s',
                       check.NAME, process_spec['name'])
 
             try:
                 if not check(process_spec):
-                    self._log('%s check failed for process %s. Trying to '
+                    self._log('`%s` check failed for process %s. Trying to '
                               'restart.', check.NAME, process_spec['name'])
 
                     return self._restart_process(process_spec)
                 else:
-                    self._log('%s check succeeded for process %s',
+                    self._log('`%s` check succeeded for process %s',
                               check.NAME, process_spec['name'])
             except Exception as exc:
-                self._log('%s check raised error for process %s: %s',
+                self._log('`%s` check raised error for process %s: %s',
                           check.NAME, process_spec['name'], exc)
 
     def _init_checks(self):
