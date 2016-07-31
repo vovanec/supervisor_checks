@@ -294,9 +294,9 @@ Process check based on CPU percent usage within specified time interval.
 
 Restart process when it consumes more than 100% CPU within 30 minutes:
 
-[eventlistener:example_check]
-command=/usr/local/bin/supervisor_cpu_check -n example_check -p 100 -i 1800 -g example_service
-events=TICK_60
+    [eventlistener:example_check]
+    command=/usr/local/bin/supervisor_cpu_check -n example_check -p 100 -i 1800 -g example_service
+    events=TICK_60
 
 
 ### Complex Check
