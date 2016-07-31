@@ -13,6 +13,7 @@ import json
 import sys
 
 from supervisor_checks import check_runner
+from supervisor_checks.check_modules import cpu
 from supervisor_checks.check_modules import http
 from supervisor_checks.check_modules import memory
 from supervisor_checks.check_modules import tcp
@@ -24,7 +25,8 @@ __author__ = 'vovanec@gmail.com'
 CHECK_CLASSES = {http.HTTPCheck.NAME: http.HTTPCheck,
                  memory.MemoryCheck.NAME: memory.MemoryCheck,
                  tcp.TCPCheck.NAME: tcp.TCPCheck,
-                 xmlrpc.XMLRPCCheck.NAME: xmlrpc.XMLRPCCheck}
+                 xmlrpc.XMLRPCCheck.NAME: xmlrpc.XMLRPCCheck,
+                 cpu.CPUCheck.NAME: cpu.CPUCheck}
 
 
 def _make_argument_parser():
