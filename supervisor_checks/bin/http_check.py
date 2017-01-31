@@ -31,10 +31,10 @@ def _make_argument_parser():
     parser.add_argument('-u', '--url', dest='url', type=str,
                         help='HTTP check url', required=True, default=None)
     parser.add_argument('-U', '--username', dest='username', type=str,
-                        help='HTTP check username', required=True,
+                        help='HTTP check username', required=False,
                         default=None)
     parser.add_argument('-P', '--password', dest='password', type=str,
-                        help='HTTP check password', required=True,
+                        help='HTTP check password', required=False,
                         default=None)
     parser.add_argument(
         '-p', '--port', dest='port', type=str,

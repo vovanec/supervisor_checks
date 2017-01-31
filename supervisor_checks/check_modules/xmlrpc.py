@@ -29,6 +29,8 @@ class XMLRPCCheck(base.BaseCheck):
             process_name = process_spec['name']
             retries_left = self._config.get('num_retries', DEFAULT_RETRIES)
             method_name = self._config.get('method', DEFAULT_METHOD)
+            username = self._config.get('username')
+            password = self._config.get('password')
 
             server_url = self._get_server_url(process_name)
             if not server_url:
@@ -40,17 +42,21 @@ class XMLRPCCheck(base.BaseCheck):
             with utils.retry_errors(retries_left, self._log).retry_context(
                     self._xmlrpc_check) as retry_xmlrpc_check:
 
-                return retry_xmlrpc_check(process_name, server_url, method_name)
+                return retry_xmlrpc_check(process_name, server_url, method_name,
+                                          username=username, password=password)
         except Exception as exc:
             self._log('Check failed: %s', exc)
 
         return False
 
-    def _xmlrpc_check(self, process_name, server_url, method_name):
+    def _xmlrpc_check(self, process_name, server_url, method_name,
+                      username=None, password=None):
 
         try:
             xmlrpc_result = getattr(
-                self._get_rpc_client(server_url), method_name)()
+                self._get_rpc_client(server_url,
+                                     username=username,
+                                     password=password), method_name)()
 
             self._log('Successfully contacted XML RPC server at %s, '
                       'method %s for process %s. Result: %s', server_url,
@@ -121,8 +127,8 @@ class XMLRPCCheck(base.BaseCheck):
             return sock_path
 
     @staticmethod
-    def _get_rpc_client(server_url):
+    def _get_rpc_client(server_url, username=None, password=None):
 
         return xmlrpclib.ServerProxy(
             'http://127.0.0.1', supervisor.xmlrpc.SupervisorTransport(
-                '', '', server_url))
+                username, password, server_url))

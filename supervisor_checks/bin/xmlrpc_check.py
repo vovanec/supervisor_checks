@@ -42,6 +42,12 @@ def _make_argument_parser():
                         help='XML RPC method name. Default is %s' % (
                             xmlrpc.DEFAULT_METHOD,), required=False,
                         default=xmlrpc.DEFAULT_METHOD)
+    parser.add_argument('-U', '--username', dest='username', type=str,
+                        help='XMLRPC check username', required=False,
+                        default=None)
+    parser.add_argument('-P', '--password', dest='password', type=str,
+                        help='XMLRPC check password', required=False,
+                        default=None)
     parser.add_argument(
         '-p', '--port', dest='port', type=str,
         default=None, required=False,
@@ -65,7 +71,10 @@ def main():
                                            'sock_dir': args.sock_dir,
                                            'num_retries': args.num_retries,
                                            'port': args.port,
-                                           'method': args.method})]
+                                           'method': args.method,
+                                           'username': args.username,
+                                           'password': args.password,
+                                           })]
 
     return check_runner.CheckRunner(
         args.check_name, args.process_group, checks_config).run()
