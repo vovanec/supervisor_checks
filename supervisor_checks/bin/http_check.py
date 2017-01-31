@@ -30,6 +30,12 @@ def _make_argument_parser():
                         help='Supervisor process group name.')
     parser.add_argument('-u', '--url', dest='url', type=str,
                         help='HTTP check url', required=True, default=None)
+    parser.add_argument('-U', '--username', dest='username', type=str,
+                        help='HTTP check username', required=True,
+                        default=None)
+    parser.add_argument('-P', '--password', dest='password', type=str,
+                        help='HTTP check password', required=True,
+                        default=None)
     parser.add_argument(
         '-p', '--port', dest='port', type=str,
         default=None, required=True,
@@ -55,7 +61,10 @@ def main():
     checks_config = [(http.HTTPCheck, {'url': args.url,
                                        'timeout': args.timeout,
                                        'num_retries': args.num_retries,
-                                       'port': args.port})]
+                                       'port': args.port,
+                                       'username': args.username,
+                                       'password': args.password,
+                                       })]
 
     return check_runner.CheckRunner(
         args.check_name, args.process_group, checks_config).run()
