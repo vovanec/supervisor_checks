@@ -47,10 +47,12 @@ class HTTPCheck(base.BaseCheck):
         host_port = '%s:%s' % (LOCALHOST, port,)
         num_retries = self._config.get('num_retries', DEFAULT_RETRIES)
         timeout = self._config.get('timeout', DEFAULT_TIMEOUT)
+        username = self._config.get('username')
+        password = self._config.get('password')
 
         with utils.retry_errors(num_retries, self._log).retry_context(
                 self._make_http_request) as retry_http_request:
-            res = retry_http_request(host_port, timeout)
+            res = retry_http_request(host_port, timeout, username, password)
 
         self._log('Status contacting URL http://%s%s for process %s: '
                   '%s %s' % (host_port, self._config['url'], process_name,
@@ -62,11 +64,17 @@ class HTTPCheck(base.BaseCheck):
 
         return True
 
-    def _make_http_request(self, host_port, timeout):
-
+    def _make_http_request(self, host_port, timeout, username, password):
         connection = httplib.HTTPConnection(host_port, timeout=timeout)
-        connection.request(
-            'GET', self._config['url'], headers=self.HEADERS)
+        if username and password:
+            import base64
+            base64string = base64.encodestring('%s:%s' % (username, password))[:-1]
+            connection.putrequest('GET', self._config['url'])
+            connection.putheader('Authorization', "Basic %s" % base64string)
+            connection.endheaders()
+        else:
+            connection.request(
+                'GET', self._config['url'], headers=self.HEADERS)
 
         return connection.getresponse()
 
