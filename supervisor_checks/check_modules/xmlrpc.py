@@ -70,7 +70,7 @@ class XMLRPCCheck(base.BaseCheck):
 
     def _validate_config(self):
 
-        one_of_required = {'url', 'sock_path', 'sock_dir'}
+        one_of_required = set(['url', 'sock_path', 'sock_dir'])
 
         param_intersection = one_of_required.intersection(self._config)
         if not param_intersection:
