@@ -26,7 +26,7 @@ GROUP_KEY = 'group'
 EVENT_NAME_KEY = 'eventname'
 
 MAX_THREADS = 16
-TICK_EVENTS = {'TICK_5', 'TICK_60', 'TICK_3600'}
+TICK_EVENTS = set(['TICK_5', 'TICK_60', 'TICK_3600'])
 
 
 class AboutToShutdown(Exception):
