@@ -186,7 +186,7 @@ class CheckRunner(object):
         :param str msg: string message.
         """
 
-        curr_dt = datetime.datetime.now().strftime('%Y/%M/%d %H:%M:%S')
+        curr_dt = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
 
         sys.stderr.write(
             '%s [%s] %s\n' % (curr_dt, self._name, msg % args,))
