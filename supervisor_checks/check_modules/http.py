@@ -14,8 +14,6 @@ __author__ = 'vovanec@gmail.com'
 DEFAULT_RETRIES = 2
 DEFAULT_TIMEOUT = 15
 
-LOCALHOST = '127.0.0.1'
-
 
 class HTTPCheck(base.BaseCheck):
     """Process check based on HTTP query.
@@ -42,11 +40,10 @@ class HTTPCheck(base.BaseCheck):
 
     def _http_check(self, process_name, port):
 
-        self._log('Querying URL http://%s:%s%s for process %s',
-                  LOCALHOST, port, self._config['url'],
+        self._log('Querying URL http://localips:%s%s for process %s',
+                  port, self._config['url'],
                   process_name)
 
-        host_port = '%s:%s' % (LOCALHOST, port,)
         num_retries = self._config.get('num_retries', DEFAULT_RETRIES)
         timeout = self._config.get('timeout', DEFAULT_TIMEOUT)
         username = self._config.get('username')
@@ -55,10 +52,10 @@ class HTTPCheck(base.BaseCheck):
         with utils.retry_errors(num_retries, self._log).retry_context(
                 self._make_http_request) as retry_http_request:
             res = retry_http_request(
-                host_port, timeout, username=username, password=password)
+                port, timeout, username=username, password=password)
 
-        self._log('Status contacting URL http://%s%s for process %s: '
-                  '%s %s' % (host_port, self._config['url'], process_name,
+        self._log('Status contacting URL http://localip:%s%s for process %s: '
+                  '%s %s' % (port, self._config['url'], process_name,
                              res.status, res.reason))
 
         if res.status != httplib.OK:
@@ -67,10 +64,9 @@ class HTTPCheck(base.BaseCheck):
 
         return True
 
-    def _make_http_request(self, host_port, timeout,
+    def _make_http_request(self, port, timeout,
                            username=None, password=None):
 
-        connection = httplib.HTTPConnection(host_port, timeout=timeout)
         headers = self.HEADERS.copy()
 
         if username and password:
@@ -78,9 +74,17 @@ class HTTPCheck(base.BaseCheck):
             headers['Authorization'] = 'Basic %s' % base64.b64encode(
                 auth_str.encode()).decode()
 
-        connection.request('GET', self._config['url'], headers=headers)
+        for ip in utils.get_local_ip():
+            host_port = '%s:%s' % (ip, port,) 
+            connection = httplib.HTTPConnection(host_port, timeout=timeout)
+            try:
+                connection.request('GET', self._config['url'], headers=headers)
+                return connection.getresponse()
+            except:
+                pass
 
-        return connection.getresponse()
+        return False
+
 
     def _validate_config(self):
 
