@@ -11,7 +11,8 @@ elif (3, 0) < py_version < (3, 2):
 
 
 install_requires = ['psutil',
-                    # 'supervisor>=4.0.0', temporarily disabled
+                    'supervisor>=3.0.0', 
+                    'netifaces',
                     ]
 
 if py_version < (3, 2):
@@ -20,15 +21,15 @@ if py_version < (3, 2):
 tests_require = install_requires + []
 
 setup(
-    name='supervisor_checks',
+    name='supervisor_healthcheck',
     packages=find_packages(),
-    version='0.7.0',
-    description='Framework to build health checks for Supervisor-based services.',
-    author='Vovan Kuznetsov',
-    author_email='vovanec@gmail.com',
-    maintainer_email='vovanec@gmail.com',
-    url='https://github.com/vovanec/supervisor_checks',
-    download_url='https://github.com/vovanec/supervisor_checks/tarball/0.7.0',
+    version='0.8.0',
+    description='Framework to build health checks for Supervisor-based services, based on supervisor-checks',
+    author='caio2k',
+    author_email='caio2k@gmail.com',
+    maintainer_email='caio2k@gmail.com',
+    url='https://github.com/caio2k/supervisor_checks',
+    download_url='https://github.com/caio2k/supervisor_checks/tarball/0.8.0',
     keywords=['supervisor', 'event', 'listener', 'eventlistener',
               'http', 'memory', 'xmlrpc', 'health', 'check', 'monitor', 'cpu'],
     license='MIT',
