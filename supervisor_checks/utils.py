@@ -6,6 +6,12 @@ import contextlib
 import functools
 import re
 import time
+try:
+    from netifaces import interfaces, ifaddresses, AF_INET
+    NETIFACES = True
+except ImportError:
+    NETIFACES = None
+
 
 from supervisor_checks import errors
 
@@ -55,6 +61,17 @@ class retry_errors(object):
         """
 
         yield self(func)
+
+
+def get_local_ip():
+    ip_list = []
+    if NETIFACES:
+        for interface in interfaces():
+            for link in ifaddresses(interface).get(AF_INET, ()):
+                ip_list.append(link['addr'])
+    else:
+        ip_list.append('127.0.0.1')
+    return ip_list
 
 
 def get_port(port_or_port_re, process_name):

@@ -13,9 +13,6 @@ __author__ = 'vovanec@gmail.com'
 DEFAULT_RETRIES = 2
 DEFAULT_TIMEOUT = 15
 
-LOCALHOST = '127.0.0.1'
-
-
 class TCPCheck(base.BaseCheck):
     """Process check based on TCP connection status.
     """
@@ -33,7 +30,7 @@ class TCPCheck(base.BaseCheck):
                     self._tcp_check) as retry_tcp_check:
                 return retry_tcp_check(process_spec['name'], port, timeout)
         except errors.InvalidPortSpec:
-            self._log('ERROR: Could not extract the HTTP port for process '
+            self._log('ERROR: Could not extract the TCP port for process '
                       'name %s using port specification %s.',
                       process_spec['name'], self._config['port'])
 
@@ -45,17 +42,25 @@ class TCPCheck(base.BaseCheck):
 
     def _tcp_check(self, process_name, port, timeout):
 
-        self._log('Trying to connect to TCP port %s for process %s',
-                  port, process_name)
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(timeout)
-        sock.connect((LOCALHOST, port))
-        sock.close()
+        for ip in utils.get_local_ip():
+            self._log('Trying to connect to TCP ip %s port %s for '
+                      'process %s',
+                      ip, port, process_name)
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(timeout)
+            try:
+                ret = sock.connect_ex((ip, port))
+                if ret == 0:
+                    self._log('Successfully connected to TCP ip %s port %s for '
+                              'process %s',
+                              ip, port, process_name)
+                    return True
+            except:
+                pass
+            finally:
+                sock.close()
 
-        self._log('Successfully connected to TCP port %s for process %s',
-                  port, process_name)
-
-        return True
+        return False
 
     def _validate_config(self):
 
