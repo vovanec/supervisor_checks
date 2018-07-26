@@ -32,7 +32,7 @@ def _make_argument_parser():
                         help='Supervisor process group name.')
     parser.add_argument('-pn', '--process-name', dest='process_name',
                         type=str, default=None,
-                        help='Supervisor process name. Process group argument is ignored if this' +
+                        help='Supervisor process name. Process group argument is ignored if this ' +
                              'is passed in')
     parser.add_argument(
         '-p', '--max-cpu-percent', dest='max_cpu', type=int, required=True,

@@ -30,7 +30,8 @@ def _make_argument_parser():
                         help='Supervisor process group name.')
     parser.add_argument('-pn', '--process-name', dest='process_name',
                         type=str, default=None,
-                        help='Supervisor process name. Process group argument is ignored if this is passed in')
+                        help='Supervisor process name. Process group argument is ignored if this ' +
+                             'is passed in')
     parser.add_argument('-u', '--url', dest='url', type=str,
                         help='HTTP check url', required=True, default=None)
     parser.add_argument('-U', '--username', dest='username', type=str,
