@@ -8,6 +8,7 @@ events=TICK_60
 """
 
 import argparse
+import json
 import sys
 
 from supervisor_checks import check_runner
@@ -30,6 +31,15 @@ def _make_argument_parser():
                         help='Supervisor process group name.')
     parser.add_argument('-u', '--url', dest='url', type=str,
                         help='HTTP check url', required=True, default=None)
+    parser.add_argument('-m', '--method', dest='method', type=str,
+                        help='HTTP request method (GET, POST, PUT...)', default='GET')
+    parser.add_argument('-j', '--json', dest='json', type=json.loads,
+                        help='HTTP json body, auto sets content-type header to application/json',
+                        default=None)
+    parser.add_argument('-b', '--body', dest='body', type=str,
+                        help='HTTP body, will be ignored if json body pass in', default=None)
+    parser.add_argument('-H', '--headers', dest='headers', type=json.loads,
+                        help='HTTP headers as json', default=None)
     parser.add_argument('-U', '--username', dest='username', type=str,
                         help='HTTP check username', required=False,
                         default=None)
@@ -61,11 +71,14 @@ def main():
     checks_config = [(http.HTTPCheck, {'url': args.url,
                                        'timeout': args.timeout,
                                        'num_retries': args.num_retries,
+                                       'method': args.method,
+                                       'json': args.json,
+                                       'body': args.body,
+                                       'headers': args.headers,
                                        'port': args.port,
                                        'username': args.username,
                                        'password': args.password,
                                        })]
-
     return check_runner.CheckRunner(
         args.check_name, args.process_group, checks_config).run()
 
