@@ -29,6 +29,10 @@ def _make_argument_parser():
     parser.add_argument('-g', '--process-group', dest='process_group',
                         type=str, required=True, default=None,
                         help='Supervisor process group name.')
+    parser.add_argument('-pn', '--process-name', dest='process_name',
+                        type=str, default=None,
+                        help='Supervisor process name. Process group argument is ignored if this' +
+                             'is passed in')
     parser.add_argument(
         '-p', '--port', dest='port', type=str,
         default=None, required=True,
@@ -56,7 +60,7 @@ def main():
                                      'port': args.port})]
 
     return check_runner.CheckRunner(
-        args.check_name, args.process_group, checks_config).run()
+        args.check_name, args.process_group, args.process_name, checks_config).run()
 
 
 if __name__ == '__main__':

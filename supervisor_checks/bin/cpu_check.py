@@ -30,6 +30,10 @@ def _make_argument_parser():
     parser.add_argument('-g', '--process-group', dest='process_group',
                         type=str, required=True, default=None,
                         help='Supervisor process group name.')
+    parser.add_argument('-pn', '--process-name', dest='process_name',
+                        type=str, default=None,
+                        help='Supervisor process name. Process group argument is ignored if this' +
+                             'is passed in')
     parser.add_argument(
         '-p', '--max-cpu-percent', dest='max_cpu', type=int, required=True,
         help='Maximum CPU percent usage allowed to use by process '
@@ -51,7 +55,7 @@ def main():
                                      'interval': args.interval})]
 
     return check_runner.CheckRunner(
-        args.check_name, args.process_group, checks_config).run()
+        args.check_name, args.process_group, args.process_name, checks_config).run()
 
 
 if __name__ == '__main__':
