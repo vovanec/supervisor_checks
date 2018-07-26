@@ -39,7 +39,7 @@ def _make_argument_parser():
                         type=str, required=True, default=None,
                         help='Health check name.')
     parser.add_argument('-g', '--process-group', dest='process_group',
-                        type=str, required=True, default=None,
+                        type=str, default=None,
                         help='Supervisor process group name.')
     parser.add_argument('-pn', '--process-name', dest='process_name',
                         type=str, default=None,
