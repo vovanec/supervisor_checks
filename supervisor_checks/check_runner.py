@@ -77,7 +77,7 @@ class CheckRunner(object):
                 event_type = self._wait_for_supervisor_event()
             except AboutToShutdown:
                 self._log(
-                    'Health check for %s process group has been told to stop.',
+                    'Health check for %s process has been told to stop.',
                     self._process_display_name())
 
                 break
@@ -92,7 +92,7 @@ class CheckRunner(object):
         self._log('Done.')
 
     def _check_processes(self):
-        """Run single check loop for process group.
+        """Run single check loop for process group or name.
         """
 
         process_specs = self._get_process_spec_list(ProcessStates.RUNNING)
@@ -106,7 +106,7 @@ class CheckRunner(object):
                         pool.submit(self._check_and_restart, process_spec)
         else:
             self._log(
-                'No processes in state RUNNING found for process group %s',
+                'No processes in state RUNNING found for process %s',
                 self._process_display_name())
 
     def _check_and_restart(self, process_spec):
@@ -143,7 +143,7 @@ class CheckRunner(object):
         return checks
 
     def _get_process_spec_list(self, state=None):
-        """Get the list of processes in a process group.
+        """Get the list of processes in a process group or name.
 
         If process_name doesn't exist then get all processes in the defined group
         If process_name exists then get only the process(es) that match that name
