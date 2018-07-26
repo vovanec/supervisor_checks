@@ -41,7 +41,7 @@ class CheckRunner(object):
     """SupervisorD checks runner.
     """
 
-    def __init__(self, check_name, process_group, checks_config, env=None):
+    def __init__(self, check_name, process_group, process_name, checks_config, env=None):
         """Constructor.
 
         :param str check_name: the name of check to display in log.
@@ -56,6 +56,8 @@ class CheckRunner(object):
         self._checks_config = checks_config
         self._checks = self._init_checks()
         self._process_group = process_group
+        # represents specific process name
+        self._process_name = process_name
         self._group_check_name = '%s_check' % (self._process_group,)
         self._rpc_client = childutils.getRPCInterface(self._environment)
         self._stop_event = threading.Event()
@@ -142,13 +144,22 @@ class CheckRunner(object):
 
     def _get_process_spec_list(self, state=None):
         """Get the list of processes in a process group.
+
+        If process_name doesn't exist then get all processes in the defined group
+        If process_name exists then get only the process(es) that match that name
         """
 
         process_specs = []
         for process_spec in self._rpc_client.supervisor.getAllProcessInfo():
-            if (process_spec[GROUP_KEY] == self._process_group and
+            if not self._process_name:
+                if (process_spec[GROUP_KEY] == self._process_group and
                     (state is None or process_spec[STATE_KEY] == state)):
-                process_specs.append(process_spec)
+                    process_specs.append(process_spec)
+            else:
+                if ((process_spec[GROUP_KEY], process_spec[NAME_KEY]) == 
+                    split_namespec(self._process_name) and
+                    (state is None or process_spec[STATE_KEY] == state)):
+                    process_specs.append(process_spec)
 
         return process_specs
 
@@ -156,8 +167,12 @@ class CheckRunner(object):
         """Restart a process.
         """
 
-        name_spec = make_namespec(
-            process_spec[GROUP_KEY], process_spec[NAME_KEY])
+        if not self._process_name:
+            name_spec = make_namespec(
+                process_spec[GROUP_KEY], process_spec[NAME_KEY])
+        else:
+            name_spec_tuple = split_namespec(self._process_name)
+            name_spec = make_namespec(name_spec_tuple[0], name_spec_tuple[1])
 
         rpc_client = childutils.getRPCInterface(self._environment)
 
