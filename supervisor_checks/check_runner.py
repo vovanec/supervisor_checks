@@ -11,7 +11,7 @@ import sys
 import threading
 
 from supervisor import childutils
-from supervisor.options import make_namespec
+from supervisor.options import make_namespec, split_namespec
 from supervisor.states import ProcessStates
 
 from supervisor_checks.compat import xmlrpclib
@@ -58,7 +58,7 @@ class CheckRunner(object):
         self._process_group = process_group
         # represents specific process name
         self._process_name = process_name
-        self._group_check_name = '%s_check' % (self._process_group,)
+        self._group_check_name = '%s_check' % (self._process_display_name(),)
         self._rpc_client = childutils.getRPCInterface(self._environment)
         self._stop_event = threading.Event()
 
@@ -66,8 +66,8 @@ class CheckRunner(object):
         """Run main check loop.
         """
 
-        self._log('Starting the health check for %s process group. '
-                  'Checks config: %s', self._process_group, self._checks_config)
+        self._log('Starting the health check for %s process '
+                  'Checks config: %s', self._process_display_name(), self._checks_config)
 
         self._install_signal_handlers()
 
@@ -78,7 +78,7 @@ class CheckRunner(object):
             except AboutToShutdown:
                 self._log(
                     'Health check for %s process group has been told to stop.',
-                    self._process_group)
+                    self._process_display_name())
 
                 break
 
@@ -107,7 +107,7 @@ class CheckRunner(object):
         else:
             self._log(
                 'No processes in state RUNNING found for process group %s',
-                self._process_group)
+                self._process_display_name())
 
     def _check_and_restart(self, process_spec):
         """Run checks for the process and restart if needed.
@@ -248,3 +248,6 @@ class CheckRunner(object):
                 return event_type
 
         raise AboutToShutdown
+
+    def _process_display_name(self):
+        return self._process_name or self._process_group
