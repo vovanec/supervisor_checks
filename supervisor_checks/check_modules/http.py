@@ -2,6 +2,7 @@
 """
 
 import base64
+import json
 
 from supervisor_checks import errors
 from supervisor_checks import utils
@@ -78,7 +79,17 @@ class HTTPCheck(base.BaseCheck):
             headers['Authorization'] = 'Basic %s' % base64.b64encode(
                 auth_str.encode()).decode()
 
-        connection.request('GET', self._config['url'], headers=headers)
+        if self._config['headers']:
+            headers.update(self._config['headers'])
+            # auto apply content type if json argument is passed in
+            if self._config['json']:
+                headers['Content-Type'] = 'application/json'
+
+        body = self._config['body']
+        if self._config['json']:
+            body = json.dumps(self._config['json'])
+
+        connection.request(self._config['method'], self._config['url'], body, headers=headers)
 
         return connection.getresponse()
 
