@@ -79,17 +79,18 @@ class HTTPCheck(base.BaseCheck):
             headers['Authorization'] = 'Basic %s' % base64.b64encode(
                 auth_str.encode()).decode()
 
-        if self._config['headers']:
-            headers.update(self._config['headers'])
+        if self._config.get('headers'):
+            headers.update(self._config.get('headers'))
             # auto apply content type if json argument is passed in
-            if self._config['json']:
+            if self._config.get('json'):
                 headers['Content-Type'] = 'application/json'
 
-        body = self._config['body']
-        if self._config['json']:
-            body = json.dumps(self._config['json'])
+        body = self._config.get('body')
+        if self._config.get('json'):
+            body = json.dumps(self._config.get('json'))
 
-        connection.request(self._config['method'], self._config['url'], body, headers=headers)
+        connection.request(self._config.get('method'), self._config.get('url'), body, 
+            headers=headers)
 
         return connection.getresponse()
 
