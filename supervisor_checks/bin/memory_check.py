@@ -29,7 +29,7 @@ def _make_argument_parser():
     parser.add_argument('-g', '--process-group', dest='process_group',
                         type=str, default=None,
                         help='Supervisor process group name.')
-    parser.add_argument('-pn', '--process-name', dest='process_name',
+    parser.add_argument('-N', '--process-name', dest='process_name',
                         type=str, default=None,
                         help='Supervisor process name. Process group argument is ignored if this ' +
                              'is passed in')

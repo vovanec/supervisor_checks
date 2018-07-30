@@ -108,7 +108,7 @@ Process check based on HTTP query.
                             Health check name.
       -g PROCESS_GROUP, --process-group PROCESS_GROUP
                             Supervisor process group name.
-      -pn PROCESS_NAME, --process-name PROCESS_NAME
+      -N PROCESS_NAME, --process-name PROCESS_NAME
                             Supervisor process name. Process group argument is
                             ignored if this is passed in
       -u URL, --url URL     HTTP check url
@@ -155,7 +155,7 @@ Process check based on TCP connection status.
                             Check name.
       -g PROCESS_GROUP, --process-group PROCESS_GROUP
                             Supervisor process group name.
-      -pn PROCESS_NAME, --process-name PROCESS_NAME
+      -N PROCESS_NAME, --process-name PROCESS_NAME
                             Supervisor process name. Process group argument is
                             ignored if this is passed in
       -p PORT, --port PORT  TCP port to query. Can be integer or regular
@@ -202,7 +202,7 @@ Process check based on call to XML RPC server.
                             Health check name.
       -g PROCESS_GROUP, --process-group PROCESS_GROUP
                             Supervisor process group name.
-      -pn PROCESS_NAME, --process-name PROCESS_NAME
+      -N PROCESS_NAME, --process-name PROCESS_NAME
                             Supervisor process name. Process group argument is
                             ignored if this is passed in
       -u URL, --url URL     XML RPC check url
@@ -259,7 +259,7 @@ Process check based on amount of memory consumed by process.
                             Health check name.
       -g PROCESS_GROUP, --process-group PROCESS_GROUP
                             Supervisor process group name.
-      -pn PROCESS_NAME, --process-name PROCESS_NAME
+      -N PROCESS_NAME, --process-name PROCESS_NAME
                             Supervisor process name. Process group argument is
                             ignored if this is passed in
       -m MAX_RSS, --msx-rss MAX_RSS
@@ -294,7 +294,7 @@ Process check based on CPU percent usage within specified time interval.
                             Health check name.
       -g PROCESS_GROUP, --process-group PROCESS_GROUP
                             Supervisor process group name.
-      -pn PROCESS_NAME, --process-name PROCESS_NAME
+      -N PROCESS_NAME, --process-name PROCESS_NAME
                             Supervisor process name. Process group argument is
                             ignored if this is passed in
       -p MAX_CPU, --max-cpu-percent MAX_CPU
@@ -332,7 +332,7 @@ Complex check(run multiple checks at once).
                             Health check name.
       -g PROCESS_GROUP, --process-group PROCESS_GROUP
                             Supervisor process group name.
-      -pn PROCESS_NAME, --process-name PROCESS_NAME
+      -N PROCESS_NAME, --process-name PROCESS_NAME
                             Supervisor process name. Process group argument is
                             ignored if this is passed in
       -c CHECK_CONFIG, --check-config CHECK_CONFIG
