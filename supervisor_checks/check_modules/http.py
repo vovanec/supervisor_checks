@@ -87,10 +87,12 @@ class HTTPCheck(base.BaseCheck):
                 headers['Content-Type'] = 'application/json'
 
         body = self._config.get('body')
-        if self._config.get('json'):
-            body = json.dumps(self._config.get('json'))
+        json_body = self._config.get('json')
+        if json_body:
+            body = json.dumps(json_body)
 
-        connection.request(self._config.get('method'), self._config['url'], body, 
+        connection.request(
+            self._config.get('method'), self._config['url'], body,
             headers=headers)
 
         return connection.getresponse()
