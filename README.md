@@ -5,7 +5,7 @@ Framework to build health checks for Supervisor-based services.
 Health check programs are supposed to run as event listeners in [Supervisor](http://supervisord.org)
 environment. On check failure Supervisor will attempt to restart monitored
 process.
- 
+
 Here's typical configuration example:
 
     [eventlistener:example_check]
@@ -13,10 +13,10 @@ Here's typical configuration example:
     stderr_logfile = /var/log/supervisor/supervisor_example_check-stderr.log
     stdout_logfile = /var/log/supervisor/supervisor_example_check-stdout.log
     events=TICK_60
-    
+
 Here's the list of check programs package provides out-of-box:
-    
-* _supervisor_http_check_: process check based on HTTP query. 
+
+* _supervisor_http_check_: process check based on HTTP query.
 * _supervisor_tcp_check_: process check based on TCP connection status.
 * _supervisor_xmlrpc_check_: process check based on call to XML RPC server.
 * _supervisor_memory_check_: process check based on amount of memory consumed by process.
@@ -39,27 +39,27 @@ be inherited:
     class BaseCheck(object):
         """Base class for checks.
         """
-    
+
         NAME = None
-    
+
         def __call__(self, process_spec):
             """Run single check.
-    
+
             :param dict process_spec: process specification dictionary as returned
                    by SupervisorD API.
-    
+
             :return: True is check succeeded, otherwise False. If check failed -
                      monitored process will be automatically restarted.
-    
+
             :rtype: bool
             """
-    
+
         def _validate_config(self):
             """Method may be implemented in subclasses. Should return None or
             raise InvalidCheckConfig in case if configuration is invalid.
-    
+
             Here's typical example of parameter check:
-    
+
               if 'url' not in self._config:
                   raise errors.InvalidCheckConfig(
                       'Required `url` parameter is missing in %s check config.' % (
@@ -83,11 +83,11 @@ Here's the example of adding custom check:
             return True
 
     if __name__ == '__main__':
-    
+
         check_runner.CheckRunner(
             'example_check', 'some_process_group', [(ExampleCheck, {})]).run()
 ```
-    
+
 ## Out-of-box checks
 
 ### HTTP Check
@@ -99,9 +99,9 @@ Process check based on HTTP query.
     $ /usr/local/bin/supervisor_http_check -h
     usage: supervisor_http_check [-h] -n CHECK_NAME -g PROCESS_GROUP -u URL -p
                                  PORT [-t TIMEOUT] [-r NUM_RETRIES]
-    
+
     Run HTTP check program.
-    
+
     optional arguments:
       -h, --help            show this help message and exit
       -n CHECK_NAME, --check-name CHECK_NAME
@@ -109,6 +109,17 @@ Process check based on HTTP query.
       -g PROCESS_GROUP, --process-group PROCESS_GROUP
                             Supervisor process group name.
       -u URL, --url URL     HTTP check url
+      -m METHOD, --method METHOD
+                            HTTP request method (GET, POST, PUT...)
+      -j JSON, --json JSON  HTTP json body, auto sets content-type header to
+                            application/json
+      -b BODY, --body BODY  HTTP body, will be ignored if json body pass in
+      -H HEADERS, --headers HEADERS
+                            HTTP headers as json
+      -U USERNAME, --username USERNAME
+                            HTTP check username
+      -P PASSWORD, --password PASSWORD
+                            HTTP check password
       -p PORT, --port PORT  HTTP port to query. Can be integer or regular
                             expression which will be used to extract port from a
                             process name.
@@ -116,7 +127,7 @@ Process check based on HTTP query.
                             Connection timeout. Default: 15
       -r NUM_RETRIES, --num-retries NUM_RETRIES
                             Connection retries. Default: 2
-                            
+
 #### Configuration Examples
 
 Query process running on port 8080 using URL _/ping_:
@@ -124,13 +135,13 @@ Query process running on port 8080 using URL _/ping_:
     [eventlistener:example_check]
     command=/usr/local/bin/supervisor_http_check -g example_service -n example_check -u /ping -t 30 -r 3 -p 8080
     events=TICK_60
-    
+
 Query process group using URL /ping. Each process is listening on it's own port.
 Each process name is formed as _some-process-name\_port_ so particular port number can
 be extracted using regular expression:
 
     [eventlistener:example_check]
-    command=/usr/local/bin/supervisor_http_check -g example_service -n example_check -u /ping -t 30 -r 3 -p ".+_(\\d+)"    
+    command=/usr/local/bin/supervisor_http_check -g example_service -n example_check -u /ping -t 30 -r 3 -p ".+_(\\d+)"
     events=TICK_60
 
 
@@ -143,9 +154,9 @@ Process check based on TCP connection status.
     $ /usr/local/bin/supervisor_tcp_check -h
     usage: supervisor_tcp_check [-h] -n CHECK_NAME -g PROCESS_GROUP -p PORT
                                 [-t TIMEOUT] [-r NUM_RETRIES]
-    
+
     Run TCP check program.
-    
+
     optional arguments:
       -h, --help            show this help message and exit
       -n CHECK_NAME, --check-name CHECK_NAME
@@ -159,7 +170,7 @@ Process check based on TCP connection status.
                             Connection timeout. Default: 15
       -r NUM_RETRIES, --num-retries NUM_RETRIES
                             Connection retries. Default: 2
-                            
+
 #### Configuration Examples
 
 Connect to process running on port 8080:
@@ -167,14 +178,14 @@ Connect to process running on port 8080:
     [eventlistener:example_check]
     command=/usr/local/bin/supervisor_tcp_check -g example_service -n example_check -t 30 -r 3 -p 8080
     events=TICK_60
-    
-Query process group when each process is listening on it's own port. 
+
+Query process group when each process is listening on it's own port.
 Each process name is formed as _some-process-name\_port_ so particular port number can
 be extracted using regular expression:
 
     [eventlistener:example_check]
-    command=/usr/local/bin/supervisor_tcp_check -g example_service -n example_check -t 30 -r 3 -p ".+_(\\d+)"    
-    events=TICK_60                            
+    command=/usr/local/bin/supervisor_tcp_check -g example_service -n example_check -t 30 -r 3 -p ".+_(\\d+)"
+    events=TICK_60
 
 
 ### XMLRPC Check
@@ -187,9 +198,9 @@ Process check based on call to XML RPC server.
     usage: supervisor_xmlrpc_check [-h] -n CHECK_NAME -g PROCESS_GROUP [-u URL]
                                    [-s SOCK_PATH] [-S SOCK_DIR] [-p PORT]
                                    [-r NUM_RETRIES]
-    
+
     Run XML RPC check program.
-    
+
     optional arguments:
       -h, --help            show this help message and exit
       -n CHECK_NAME, --check-name CHECK_NAME
@@ -204,7 +215,7 @@ Process check based on call to XML RPC server.
                             will be constructed using process name:
                             <process_name>.sock.
       -m METHOD, --method METHOD
-                            XML RPC method name. Default is status                            
+                            XML RPC method name. Default is status
       -p PORT, --port PORT  Port to query. Can be integer or regular
                             expression which will be used to extract port from a
                             process name.
@@ -218,19 +229,19 @@ Call to process' XML RPC server listening on port 8080, URL /status, RPC method 
     [eventlistener:example_check]
     command=/usr/local/bin/supervisor_xmlrpc_check -g example_service -n example_check -r 3 -p 8080 -u /status -m get_status
     events=TICK_60
-    
+
 Call to process' XML RPC server listening on UNIX socket:
 
     [eventlistener:example_check]
     command=/usr/local/bin/supervisor_xmlrpc_check -g example_service -n example_check -r 3 -s /var/run/example.sock -m get_status
     events=TICK_60
-    
+
 Call to process group XML RPC servers, listening on different UNIX socket. In such
 case socket directory must be specified, process socket name will be formed as <process_name>.sock:
 
     [eventlistener:example_check]
     command=/usr/local/bin/supervisor_xmlrpc_check -g example_service -n example_check -r 3 -S /var/run/ -m get_status
-    events=TICK_60    
+    events=TICK_60
 
 ### Memory Check
 
@@ -241,9 +252,9 @@ Process check based on amount of memory consumed by process.
     $ /usr/local/bin/supervisor_memory_check -h
     usage: supervisor_memory_check [-h] -n CHECK_NAME -g PROCESS_GROUP -m MAX_RSS
                                    [-c CUMULATIVE]
-    
+
     Run memory check program.
-    
+
     optional arguments:
       -h, --help            show this help message and exit
       -n CHECK_NAME, --check-name CHECK_NAME
@@ -308,9 +319,9 @@ Complex check(run multiple checks at once).
     $ /usr/local/bin/supervisor_complex_check -h
     usage: supervisor_complex_check [-h] -n CHECK_NAME -g PROCESS_GROUP -c
                                     CHECK_CONFIG
-    
+
     Run SupervisorD check program.
-    
+
     optional arguments:
       -h, --help            show this help message and exit
       -n CHECK_NAME, --check-name CHECK_NAME
@@ -341,4 +352,4 @@ the framework to easily implement application-specific health checks of any comp
 
 Please file here: <https://github.com/vovanec/supervisor_checks/issues>
 
-Or contact me directly: <vovanec@gmail.com> 
+Or contact me directly: <vovanec@gmail.com>
