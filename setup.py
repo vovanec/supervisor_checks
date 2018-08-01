@@ -22,7 +22,7 @@ tests_require = install_requires + []
 setup(
     name='supervisor_checks',
     packages=find_packages(),
-    version='0.7.0',
+    version='0.8.0',
     description='Framework to build health checks for Supervisor-based services.',
     author='Vovan Kuznetsov',
     author_email='vovanec@gmail.com',
