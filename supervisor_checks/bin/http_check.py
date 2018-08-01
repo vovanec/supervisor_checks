@@ -27,8 +27,12 @@ def _make_argument_parser():
                         type=str, required=True, default=None,
                         help='Health check name.')
     parser.add_argument('-g', '--process-group', dest='process_group',
-                        type=str, required=True, default=None,
+                        type=str, default=None,
                         help='Supervisor process group name.')
+    parser.add_argument('-N', '--process-name', dest='process_name',
+                        type=str, default=None,
+                        help='Supervisor process name. Process group argument is ignored if this ' +
+                             'is passed in')
     parser.add_argument('-u', '--url', dest='url', type=str,
                         help='HTTP check url', required=True, default=None)
     parser.add_argument('-m', '--method', dest='method', type=str,
@@ -80,7 +84,7 @@ def main():
                                        'password': args.password,
                                        })]
     return check_runner.CheckRunner(
-        args.check_name, args.process_group, checks_config).run()
+        args.check_name, args.process_group, args.process_name, checks_config).run()
 
 
 if __name__ == '__main__':
