@@ -1,3 +1,10 @@
+# Installing
+
+Install and update using [pip](https://pypi.org/project/pip/)
+
+    pip install supervisor_checks
+
+
 # Supervisor Health Checks
 
 Framework to build health checks for Supervisor-based services.
