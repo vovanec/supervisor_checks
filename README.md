@@ -1,10 +1,3 @@
-# Installing
-
-Install and update using [pip](https://pypi.org/project/pip/)
-
-    pip install supervisor_checks
-
-
 # Supervisor Health Checks
 
 Framework to build health checks for Supervisor-based services.
@@ -33,6 +26,11 @@ Here's the list of check programs package provides out-of-box:
 For now, it is developed and supposed to work primarily with Python 3 and
 Supervisor 4 branch. There's nominal Python 2.x support but it's not tested.
 
+# Installing
+
+Install and update using [pip](https://pypi.org/project/pip/)
+
+    pip install supervisor_checks
 
 ## Developing Custom Check Modules
 
