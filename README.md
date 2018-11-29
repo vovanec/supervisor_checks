@@ -18,10 +18,10 @@ Here's the list of check programs package provides out-of-box:
 
 * _supervisor_http_check_: process check based on HTTP query.
 * _supervisor_tcp_check_: process check based on TCP connection status.
-* _supervisor_xmlrpc_check_: process check based on call to XML RPC server.
+* _supervisor_xmlrpc_check_: process check based on call to XML-RPC server.
 * _supervisor_memory_check_: process check based on amount of memory consumed by process.
 * _supervisor_cpu_check_: process check based on CPU percent usage within time interval.
-* _supervisor_complex_check_: complex check(run multiple checks at once).
+* _supervisor_complex_check_: complex check (run multiple checks at once).
 
 For now, it is developed and supposed to work primarily with Python 3 and
 Supervisor 4 branch. There's nominal Python 2.x support but it's not tested.
@@ -199,9 +199,9 @@ be extracted using regular expression:
     events=TICK_60
 
 
-### XMLRPC Check
+### XML-RPC Check
 
-Process check based on call to XML RPC server.
+Process check based on call to XML-RPC server.
 
 #### CLI
 
@@ -238,19 +238,19 @@ Process check based on call to XML RPC server.
 
 #### Configuration Examples
 
-Call to process' XML RPC server listening on port 8080, URL /status, RPC method get_status:
+Call to process' XML-RPC server listening on port 8080, URL /status, RPC method get_status:
 
     [eventlistener:example_check]
     command=/usr/local/bin/supervisor_xmlrpc_check -g example_service -n example_check -r 3 -p 8080 -u /status -m get_status
     events=TICK_60
 
-Call to process' XML RPC server listening on UNIX socket:
+Call to process' XML-RPC server listening on UNIX socket:
 
     [eventlistener:example_check]
     command=/usr/local/bin/supervisor_xmlrpc_check -g example_service -n example_check -r 3 -s /var/run/example.sock -m get_status
     events=TICK_60
 
-Call to process group XML RPC servers, listening on different UNIX socket. In such
+Call to process group XML-RPC servers, listening on different UNIX socket. In such
 case socket directory must be specified, process socket name will be formed as <process_name>.sock:
 
     [eventlistener:example_check]
@@ -332,7 +332,7 @@ Restart process when it consumes more than 100% CPU within 30 minutes:
 
 ### Complex Check
 
-Complex check(run multiple checks at once).
+Complex check (run multiple checks at once).
 
 #### CLI
 
