@@ -376,3 +376,8 @@ the framework to easily implement application-specific health checks of any comp
 Please file here: <https://github.com/vovanec/supervisor_checks/issues>
 
 Or contact me directly: <vovanec@gmail.com>
+
+<a href="https://scan.coverity.com/projects/vovanec-supervisor_checks">
+  <img alt="Coverity Scan Build Status"
+       src="https://scan.coverity.com/projects/22036/badge.svg"/>
+</a>
