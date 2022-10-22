@@ -206,7 +206,6 @@ class NotificationFile:
     def get_tempdir():
         return os.path.join(tempfile.gettempdir(), "supervisor_checks")
 
-
     @staticmethod
     def get_filename(process_group, process_name, pid):
         return f"{process_group!s}-{process_name!s}-{pid!s}"
