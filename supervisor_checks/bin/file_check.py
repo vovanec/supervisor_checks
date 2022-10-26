@@ -26,7 +26,8 @@ def _make_argument_parser():
         '-t', '--timeout', dest='timeout', type=int, required=True,
         help='Timeout in seconds after no file change a process is considered dead.')
     parser.add_argument("-x", "--fail-on-error", dest="fail_on_error", action="store_true", help="Fail the health check on any error.")
-    parser.add_argument("-f", "--file", dest="file", type=str, default=None, help="Filepath of file to check (default: /tmp/supervisor_checks/%%(process_group)s-%%(process_name)s-%%(process_pid)s-*)")
+    parser.add_argument("-f", "--filepath", dest="filepath", type=str, default=None, help="Filepath of file to check (default: %%(root_directory)/%%(process_group)s-%%(process_name)s-%%(process_pid)s-*)")
+    parser.add_argument("-d", "--root-dir", dest="root_dir", type=str, default=None, help="Root Directory of Notification Files (default: tempfile.gettempdir())")
     return parser
 
 
@@ -35,7 +36,7 @@ def main():
     arg_parser = _make_argument_parser()
     args = arg_parser.parse_args()
 
-    checks_config = [(file.FileCheck, {'timeout': args.timeout, 'fail_on_error': args.fail_on_error, 'file': args.file})]
+    checks_config = [(file.FileCheck, {'timeout': args.timeout, 'fail_on_error': args.fail_on_error, 'filepath': args.filepath, 'root_dir': args.root_dir})]
     return check_runner.CheckRunner(
         args.check_name, args.process_group, args.process_name, checks_config).run()
 

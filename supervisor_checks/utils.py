@@ -203,32 +203,27 @@ class _TemporaryFileWrapper:
 
 class NotificationFile:
     @staticmethod
-    def get_tempdir():
-        return os.path.join(tempfile.gettempdir(), "supervisor_checks")
-
-    @staticmethod
     def get_filename(process_group, process_name, pid):
         return f"{process_group!s}-{process_name!s}-{pid!s}"
 
     @staticmethod
-    def get_filepath(process_group, process_name, pid):
-        return os.path.join(NotificationFile.get_tempdir(), NotificationFile.get_filename(process_group, process_name, pid))
+    def get_filepath(root_dir=None, process_group=None, process_name=None, pid=None):
+        root_dir = root_dir if root_dir is not None else tempfile.gettempdir()
+        process_group = process_group if process_group is not None else os.getenv("SUPERVISOR_GROUP_NAME")
+        process_name = process_name if process_name is not None else os.getenv("SUPERVISOR_PROCESS_NAME")
+        pid = pid if pid is not None else os.getpid()
+        return os.path.join(root_dir, NotificationFile.get_filename(process_group, process_name, pid))
 
-    @staticmethod
-    def get_filepath_within_subprocess():
-        return os.path.join(NotificationFile.get_tempdir(), NotificationFile.get_filename(os.getenv("SUPERVISOR_GROUP_NAME"), os.getenv("SUPERVISOR_PROCESS_NAME"), os.getpid()))
-
-    def __init__(self, filepath=None, delete=True):
+    def __init__(self, filepath=None, root_dir=None, delete=True):
         """
         Creates a NotificationFile object used to indicate a heartbeat.
 
         param str filepath: optional filepath to use as notification file
+        param str root_dir: optional root_dir to use for the notification file (default: tempfile.gettempdir())
         param bool delete: wether to delete the notification file after fd is closed 
         """
         if filepath is None:
-            if not os.path.exists(self.get_tempdir()):
-                os.mkdir(self.get_tempdir())
-            filepath = self.get_filepath_within_subprocess()
+            filepath = self.get_filepath(root_dir=root_dir)
 
         def opener(file, flags):
             flags |= os.O_NOFOLLOW

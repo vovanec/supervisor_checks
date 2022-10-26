@@ -339,25 +339,28 @@ Process check based on file update timeout.
 
     $ /usr/local/bin/supervisor_file_check -h
     usage: supervisor_file_check [-h] -n CHECK_NAME [-g PROCESS_GROUP] [-N PROCESS_NAME] -t TIMEOUT [-x] [-f FILE]
+
     Run File check program.
     
-    optional arguments:
+    options:
       -h, --help            show this help message and exit
       -n CHECK_NAME, --check-name CHECK_NAME
                             Health check name.
       -g PROCESS_GROUP, --process-group PROCESS_GROUP
                             Supervisor process group name.
       -N PROCESS_NAME, --process-name PROCESS_NAME
-                            Supervisor process name. Process group argument is
-                            ignored if this is passed in
+                            Supervisor process name. Process group argument is ignored if this is passed in
       -t TIMEOUT, --timeout TIMEOUT
                             Timeout in seconds after no file change a process is considered dead.
       -x, --fail-on-error   Fail the health check on any error.
-      -f FILE, --file FILE  Filepath of file to check (default:
-                        /tmp/supervisor_checks/%(process_group)s-%(process_name)s-%(process_pid)s)
+      -f FILEPATH, --filepath FILEPATH
+                            Filepath of file to check (default:
+                            %(root_directory)/%(process_group)s-%(process_name)s-%(process_pid)s-*)
+      -d ROOT_DIR, --root-dir ROOT_DIR
+                            Root Directory of Notification Files (default: tempfile.gettempdir())
 #### Configuration Examples
 
-Restart process when it consumes more than 100% CPU within 30 minutes:
+Perform passive health checks on default root_directory, allowing a maximum of 30 seconds health notification delay.
 
     [eventlistener:example_check]
     command=/usr/local/bin/supervisor_file_check -n example_check -t 30

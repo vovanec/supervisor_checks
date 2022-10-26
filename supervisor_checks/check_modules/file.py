@@ -9,9 +9,9 @@ class FileCheck(base.BaseCheck):
     NAME = "file"
 
     def __call__(self, process_spec):
-        notification_filepath = self._config["file"]
+        notification_filepath = self._config["filepath"]
         if notification_filepath is None:
-            notification_filepath = utils.NotificationFile.get_filepath(process_spec["group"], process_spec["name"], process_spec["pid"])
+            notification_filepath = utils.NotificationFile.get_filepath(self._config["root_dir"], process_spec["group"], process_spec["name"], process_spec["pid"])
 
         try:
             stat = os.stat(notification_filepath, follow_symlinks=False)
@@ -37,7 +37,12 @@ class FileCheck(base.BaseCheck):
                 'Required `fail_on_error` parameter is missing in %s check config.' % (
                     self.NAME,))
 
-        if "file" not in self._config:
+        if "filepath" not in self._config:
             raise errors.InvalidCheckConfig(
-                'Required `file` parameter is missing in %s check config.' % (
+                'Required `filepath` parameter is missing in %s check config.' % (
+                    self.NAME,))
+
+        if "root_dir" not in self._config:
+            raise errors.InvalidCheckConfig(
+                'Required `root_dir` parameter is missing in %s check config.' % (
                     self.NAME,))
