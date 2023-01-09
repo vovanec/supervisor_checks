@@ -21,7 +21,7 @@ Here's the list of check programs package provides out-of-box:
 * _supervisor_xmlrpc_check_: process check based on call to XML-RPC server.
 * _supervisor_memory_check_: process check based on amount of memory consumed by process.
 * _supervisor_cpu_check_: process check based on CPU percent usage within time interval.
-* _supervisor_file_check_: process check based on file update timeout.
+* _supervisor_file_check_: process check based on file update timeout. (Only UNIX)
 * _supervisor_complex_check_: complex check (run multiple checks at once).
 
 For now, it is developed and supposed to work primarily with Python 3 and
