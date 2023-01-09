@@ -91,53 +91,6 @@ def get_port(port_or_port_re, process_name):
         'expression %s' % (process_name, port_or_port_re))
 
 
-
-
-# Directly copied from the tempfile module
-class _TemporaryFileCloser:
-    """A separate object allowing proper closing of a temporary file's
-    underlying file object, without adding a __del__ method to the
-    temporary file."""
-
-    file = None  # Set here since __del__ checks it
-    close_called = False
-
-    def __init__(self, file, name, delete=True):
-        self.file = file
-        self.name = name
-        self.delete = delete
-
-    # NT provides delete-on-close as a primitive, so we don't need
-    # the wrapper to do anything special.  We still use it so that
-    # file.name is useful (i.e. not "(fdopen)") with NamedTemporaryFile.
-    if os.name != 'nt':
-        # Cache the unlinker so we don't get spurious errors at
-        # shutdown when the module-level "os" is None'd out.  Note
-        # that this must be referenced as self.unlink, because the
-        # name TemporaryFileWrapper may also get None'd out before
-        # __del__ is called.
-
-        def close(self, unlink=os.unlink):
-            if not self.close_called and self.file is not None:
-                self.close_called = True
-                try:
-                    self.file.close()
-                finally:
-                    if self.delete:
-                        unlink(self.name)
-
-        # Need to ensure the file is deleted on __del__
-        def __del__(self):
-            self.close()
-
-    else:
-        def close(self):
-            if not self.close_called:
-                self.close_called = True
-                self.file.close()
-
-
-# Directly copied from the tempfile module
 class _TemporaryFileWrapper:
     """Temporary file wrapper
 
@@ -150,56 +103,27 @@ class _TemporaryFileWrapper:
         self.file = file
         self.name = name
         self.delete = delete
-        self._closer = _TemporaryFileCloser(file, name, delete)
+        self.close_called = False
 
     def __getattr__(self, name):
-        # Attribute lookups are delegated to the underlying file
-        # and cached for non-numeric results
-        # (i.e. methods are cached, closed and friends are not)
-        file = self.__dict__['file']
-        a = getattr(file, name)
-        if hasattr(a, '__call__'):
-            func = a
-            @functools.wraps(func)
-            def func_wrapper(*args, **kwargs):
-                return func(*args, **kwargs)
-            # Avoid closing the file as long as the wrapper is alive,
-            # see issue #18879.
-            func_wrapper._closer = self._closer
-            a = func_wrapper
-        if not isinstance(a, int):
-            setattr(self, name, a)
-        return a
+        return getattr(self.file, name)
 
-    # The underlying __enter__ method returns the wrong object
-    # (self.file) so override it to return the wrapper
-    def __enter__(self):
-        self.file.__enter__()
-        return self
+    def close(self, unlink=os.unlink):
+        if not self.close_called and self.file is not None:
+            self.close_called = True
+            try:
+                self.file.close()
+            finally:
+                if self.delete:
+                    unlink(self.name)
 
-    # Need to trap __exit__ as well to ensure the file gets
-    # deleted when used in a with statement
-    def __exit__(self, exc, value, tb):
-        result = self.file.__exit__(exc, value, tb)
+    def __del__(self):
         self.close()
-        return result
 
-    def close(self):
-        """
-        Close the temporary file, possibly deleting it.
-        """
-        self._closer.close()
 
-    # iter() doesn't use __getattr__ to find the __iter__ method
-    def __iter__(self):
-        # Don't return iter(self.file), but yield from it to avoid closing
-        # file as long as it's being used as iterator (see issue #23700).  We
-        # can't use 'yield from' here because iter(file) returns the file
-        # object itself, which has a close method, and thus the file would get
-        # closed when the generator is finalized, due to PEP380 semantics.
-        for line in self.file:
-            yield line
-
+_open_flags = os.O_CREAT
+if hasattr(os, "O_NOFOLLOW"):
+    _open_flags |= os.O_NOFOLLOW
 
 class NotificationFile:
     @staticmethod
@@ -217,6 +141,7 @@ class NotificationFile:
     def __init__(self, filepath=None, root_dir=None, delete=True):
         """
         Creates a NotificationFile object used to indicate a heartbeat.
+        Only supports UNIX.
 
         param str filepath: optional filepath to use as notification file
         param str root_dir: optional root_dir to use for the notification file (default: tempfile.gettempdir())
@@ -226,8 +151,7 @@ class NotificationFile:
             filepath = self.get_filepath(root_dir=root_dir)
 
         def opener(file, flags):
-            flags |= os.O_NOFOLLOW
-            flags |= os.O_CREAT
+            flags |= _open_flags
             return os.open(file, flags, mode=0o000)
 
         fd = open(filepath, "rb", buffering=0, opener=opener)
