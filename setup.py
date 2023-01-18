@@ -60,7 +60,8 @@ setup(
             'supervisor_http_check=supervisor_checks.bin.http_check:main',
             'supervisor_tcp_check=supervisor_checks.bin.tcp_check:main',
             'supervisor_xmlrpc_check=supervisor_checks.bin.xmlrpc_check:main',
-            'supervisor_complex_check=supervisor_checks.bin.complex_check:main']
+            'supervisor_complex_check=supervisor_checks.bin.complex_check:main',
+            'supervisor_file_check=supervisor_checks.bin.file_check:main']
     }
 )
 

@@ -21,6 +21,7 @@ Here's the list of check programs package provides out-of-box:
 * _supervisor_xmlrpc_check_: process check based on call to XML-RPC server.
 * _supervisor_memory_check_: process check based on amount of memory consumed by process.
 * _supervisor_cpu_check_: process check based on CPU percent usage within time interval.
+* _supervisor_file_check_: process check based on file update timeout. (Only UNIX)
 * _supervisor_complex_check_: complex check (run multiple checks at once).
 
 For now, it is developed and supposed to work primarily with Python 3 and
@@ -329,6 +330,55 @@ Restart process when it consumes more than 100% CPU within 30 minutes:
     command=/usr/local/bin/supervisor_cpu_check -n example_check -p 100 -i 1800 -g example_service
     events=TICK_60
 
+
+### File Check
+
+Process check based on file update timeout.
+
+#### CLI
+
+    $ /usr/local/bin/supervisor_file_check -h
+    usage: supervisor_file_check [-h] -n CHECK_NAME [-g PROCESS_GROUP] [-N PROCESS_NAME] -t TIMEOUT [-x] [-f FILE]
+
+    Run File check program.
+    
+    options:
+      -h, --help            show this help message and exit
+      -n CHECK_NAME, --check-name CHECK_NAME
+                            Health check name.
+      -g PROCESS_GROUP, --process-group PROCESS_GROUP
+                            Supervisor process group name.
+      -N PROCESS_NAME, --process-name PROCESS_NAME
+                            Supervisor process name. Process group argument is ignored if this is passed in
+      -t TIMEOUT, --timeout TIMEOUT
+                            Timeout in seconds after no file change a process is considered dead.
+      -x, --fail-on-error   Fail the health check on any error.
+      -f FILEPATH, --filepath FILEPATH
+                            Filepath of file to check (default:
+                            %(root_directory)/%(process_group)s-%(process_name)s-%(process_pid)s-*)
+      -d ROOT_DIR, --root-dir ROOT_DIR
+                            Root Directory of Notification Files (default: tempfile.gettempdir())
+#### Configuration Examples
+
+Perform passive health checks on default root_directory, allowing a maximum of 30 seconds health notification delay.
+
+    [eventlistener:example_check]
+    command=/usr/local/bin/supervisor_file_check -n example_check -t 30
+    events=TICK_60
+
+#### NotificationFile Utility Class
+
+To simplify the work with this health check module, an utility class is provided to update the notification file associated with the current supervisor subprocess and notify an heartbeat.
+
+```python
+from supervisor_checks.util import NotificationFile
+
+tmp = NotificationFile()
+
+while True:
+    tmp.notify()
+    # do some work here
+```
 
 ### Complex Check
 
